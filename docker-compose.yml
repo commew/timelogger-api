@@ -20,9 +20,6 @@ services:
     image: mysql:8.0.32
     container_name: db.timelogger
     environment:
-      MYSQL_DATABASE: timelogger_dev_db
-      MYSQL_USER: timelogger
-      MYSQL_PASSWORD: password
       MYSQL_ROOT_PASSWORD: root
       TZ: 'Asia/Tokyo'
     volumes:
