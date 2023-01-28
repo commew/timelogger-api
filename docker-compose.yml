@@ -29,3 +29,4 @@ services:
       - './docker/data:/var/lib/mysql'
     ports:
       - 3306:3306
+    command: --default-authentication-plugin=mysql_native_password
