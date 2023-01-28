@@ -1,0 +1,31 @@
+version: "3"
+services:
+  api:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile.dev.api
+    container_name: api.timelogger
+    depends_on:
+      - db
+    links:
+      - db
+    volumes:
+      - .:/app
+    working_dir: /app
+    user: 1000:1000
+    ports:
+      - 3000:3000
+    command: bash ./start_dev_server.sh
+  db:
+    image: mysql:8.0.32
+    container_name: db.timelogger
+    environment:
+      MYSQL_DATABASE: timelogger_dev_db
+      MYSQL_USER: timelogger
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: root
+      TZ: 'Asia/Tokyo'
+    volumes:
+      - './docker/data:/var/lib/mysql'
+    ports:
+      - 3306:3306
