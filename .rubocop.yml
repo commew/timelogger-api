@@ -1,0 +1,10 @@
+inherit_from: .rubocop_todo.yml
+
+AllCops:
+  Exclude:
+    - docker/**/*
+    - vendor/**/*
+  NewCops: enable
+
+require:
+  - rubocop-rails
