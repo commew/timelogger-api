@@ -28,7 +28,7 @@ docker compose up -d
 docker compose exec api bash
 
 # DB 接続
-docker compose exec db mysql -u root -p # パスワードは 'root'
+docker compose exec db mysql -u root -p
 # ローカルのクライアントから DB 接続
 mysql -u root -h 127.0.0.1 --port 3306 -p
 

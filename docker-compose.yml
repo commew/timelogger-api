@@ -4,7 +4,7 @@ services:
     build:
       context: ./docker
       dockerfile: Dockerfile.dev.api
-    container_name: api.timelogger
+    container_name: api-timelogger
     depends_on:
       - db
     volumes:
@@ -16,7 +16,7 @@ services:
     command: bash ./start_dev_server.sh
   db:
     image: mysql:8.0.32
-    container_name: db.timelogger
+    container_name: db-timelogger
     environment:
       MYSQL_ROOT_PASSWORD: root
       TZ: 'Asia/Tokyo'
