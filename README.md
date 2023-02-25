@@ -36,6 +36,32 @@ mysql -u root -h 127.0.0.1 --port 3306 -p
 docker compose down
 ```
 
+
+## 開発中のあれこれ
+
+### 各種コマンド実行
+
+以下は基本、apiコンテナ内で行う。つまり、頭に`docker compose exec api`をつけて実行する。
+
+
+#### rswagでスキーマの生成
+
+```
+rake rswag
+```
+
+
+#### rspecでの自動テストの実行
+
+```
+bundle exec rspec
+```
+
+### Dockerコンテナ再起動が必要なタイミング
+
+* `bundle install`後。
+
+
 ## トラブルシュート
 
 - DB 関連でうまくいかない場合は環境を終了した状態で `rm -rf docker/data` を実行して DB のデータを全削除する。
