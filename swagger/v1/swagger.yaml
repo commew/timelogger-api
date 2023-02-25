@@ -13,7 +13,7 @@ paths:
         '200':
           description: echo
 servers:
-- url: https://{defaultHost}
+- url: http://{defaultHost}
   variables:
     defaultHost:
-      default: www.example.com
+      default: localhost:3000
