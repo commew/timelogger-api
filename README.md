@@ -1,5 +1,11 @@
 # How to Start
 
+## 開発環境のURL
+
+### swagger-ui
+http://localhost:3000/api-docs/index.html
+
+
 ## 初回構築
 ```
 ## バックグラウンドで環境起動、API サーバーの出力を監視
@@ -35,6 +41,32 @@ mysql -u root -h 127.0.0.1 --port 3306 -p
 # 環境の終了
 docker compose down
 ```
+
+
+## 開発中のあれこれ
+
+### 各種コマンド実行
+
+以下は基本、apiコンテナ内で行う。つまり、頭に`docker compose exec api`をつけて実行する。
+
+
+#### rswagでスキーマの生成
+
+```
+rake rswag
+```
+
+
+#### rspecでの自動テストの実行
+
+```
+bundle exec rspec
+```
+
+### Dockerコンテナ再起動が必要なタイミング
+
+* `bundle install`後。
+
 
 ## トラブルシュート
 
