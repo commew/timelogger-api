@@ -1,0 +1,10 @@
+/vendor
+/docker
+/log
+/spec
+/storage
+/tmp
+/docker-compose.yml
+/.*
+/alias.sh
+/start_dev_server.sh
