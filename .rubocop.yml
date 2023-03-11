@@ -9,6 +9,11 @@ AllCops:
     - vendor/**/*
   NewCops: enable
 
+Style/BlockComments:
+  Exclude:
+    # 適切な使い方で、自動修正してもおかしいだけ。
+    - spec/spec_helper.rb
+
 # 全てのクラス・モジュールの上にコメントを強制する必要はないと思う。
 Style/Documentation:
   Enabled: false
