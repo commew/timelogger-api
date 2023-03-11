@@ -8,10 +8,10 @@ RSpec.describe 'Echo API', type: :request do
 
       response '200', 'echo' do
         schema type: :object,
-          properties: {
-            echo: { type: :string },
-          },
-          required: ['echo']
+               properties: {
+                 echo: { type: :string }
+               },
+               required: ['echo']
 
         run_test!
       end

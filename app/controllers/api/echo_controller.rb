@@ -1,7 +1,7 @@
 class Api::EchoController < ApplicationController
   def index
     render json: {
-      echo: 'ok',
+      echo: 'ok'
     }
   end
 end
