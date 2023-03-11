@@ -9,6 +9,12 @@ AllCops:
     - vendor/**/*
   NewCops: enable
 
+# rswagのテストで偽陽性になるルール。
+# https://github.com/rubocop/rubocop-rspec/issues/1177
+RSpec/EmptyExampleGroup:
+  Exclude:
+    - spec/requests/api/**/*
+
 Style/BlockComments:
   Exclude:
     # 適切な使い方で、自動修正してもおかしいだけ。
