@@ -25,3 +25,4 @@ Style/FrozenStringLiteralComment:
 
 require:
   - rubocop-rails
+  - rubocop-rspec
