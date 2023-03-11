@@ -1,6 +1,6 @@
 require 'swagger_helper'
 
-RSpec.describe 'Echo API', type: :request do
+RSpec.describe 'Echo API' do
   path '/api/echo' do
     get 'Simple Echo' do
       tags 'Echo'
