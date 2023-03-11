@@ -9,5 +9,14 @@ AllCops:
     - vendor/**/*
   NewCops: enable
 
+# 全てのクラス・モジュールの上にコメントを強制する必要はないと思う。
+Style/Documentation:
+  Enabled: false
+
+# 全ファイルにマジックコメントを求めるのはやりすぎかな。
+# 本当に文字列のデフォルトが不変になるのであれば検討。
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
 require:
   - rubocop-rails
