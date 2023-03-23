@@ -1,0 +1,74 @@
+name: Production Deployment
+
+## 構築段階でテスト等がまだ必要になると思ったため、
+## コメントアウトしたコードやテストについてのコメントを残している
+## 不要になった段階できれいにしてよい
+
+## prod
+on:
+  push:
+    branches:
+      - main
+
+## test github-actions
+# on: [push]
+
+env:
+  PROJECT_ID: ${{ secrets.PROD_PROJECT_ID }}
+  REGION: ${{ secrets.PROD_REGION }}
+  IMAGE_URL: ${{ secrets.PROD_IMAGE_URL }}:${{ github.sha }} # prod
+  # IMAGE_URL: ${{ secrets.PROD_IMAGE_URL }}:init # test, テスト時には IMAGE_URL を固定した方が Cloud Run のデプロイだけ試したい際に時間コストが低くなる
+  SERVICE_NAME: ${{ secrets.PROD_SERVICE_NAME }}
+  WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.PROD_WORKLOAD_IDENTITY_PROVIDER }}
+  SERVICE_ACCOUNT_EMAIL: ${{ secrets.PROD_SERVICE_ACCOUNT_EMAIL }}
+jobs:
+  build-and-push-container-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    steps:
+      - name: 'Checkout'
+        uses: 'actions/checkout@v3'
+
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          token_format: 'access_token'
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ env.SERVICE_ACCOUNT_EMAIL }}
+          access_token_lifetime: '900s'
+          # image ビルドにかかる時間を考慮して15分に設定
+          # access_token は docker push が実行されるまで
+          # 有効期限が必要かと思い、そのように設定
+
+      ## Artifact Registry, using docker
+      - uses: 'docker/login-action@v1'
+        name: 'Docker login using OAuth2'
+        with:
+          registry: '${{ env.REGION }}-docker.pkg.dev'
+          username: 'oauth2accesstoken'
+          password: '${{ steps.auth.outputs.access_token }}'
+
+      - name: 'Build Docker Image'
+        run: |-
+          docker build -t local/image --build-arg ENV="production" ./
+          docker tag local/image ${{ env.IMAGE_URL }}
+
+      - name: 'Push Docker Image'
+        run: docker push ${{ env.IMAGE_URL }}
+
+      ## Cloud Run
+      - name: 'Deploy to Cloud Run'
+        id: 'deploy'
+        uses: 'google-github-actions/deploy-cloudrun@v1'
+        with:
+          service: ${{ env.SERVICE_NAME }}
+          region: ${{ env.REGION }}
+          image: ${{ env.IMAGE_URL }}
+          project_id: ${{ env.PROJECT_ID }}
+
+      ## for reducing cost
+      - name: 'Remove Image from Artifact Registry'
+        run: gcloud artifacts docker images delete ${{ env.IMAGE_URL }} --quiet
