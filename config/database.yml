@@ -66,9 +66,11 @@ production:
 
 staging:
   <<: *default
-  database: <%= Rails.application.credentials.db&.database %>
-  username: <%= Rails.application.credentials.db&.username %>
-  host: <%= Rails.application.credentials.db&.host %>
-  password: <%= Rails.application.credentials.db&.password %>
-  ssl_mode: <%= Rails.application.credentials.db&.ssl_mode %>
-  sslca: <%= Rails.application.credentials.db&.sslca %>
+  <% if Rails.env.staging? %>
+    database: <%= Rails.application.credentials.db.database %>
+    username: <%= Rails.application.credentials.db.username %>
+    host: <%= Rails.application.credentials.db.host %>
+    password: <%= Rails.application.credentials.db.password %>
+    ssl_mode: <%= Rails.application.credentials.db.ssl_mode %>
+    sslca: <%= Rails.application.credentials.db.sslca %>
+  <% end %>
