@@ -50,27 +50,24 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 
-
-# ローカル環境でもこのファイル全体が読み込まれる (評価される)
-# development 環境の credentials は存在しておらず参照エラーになるので、ぼっち演算子を使用
+<% if Rails.env.production? %>
 production:
-  <<: *default
-  <% if Rails.env.production? %>
-    database: <%= Rails.application.credentials.db.database %>
-    username: <%= Rails.application.credentials.db.username %>
-    host: <%= Rails.application.credentials.db.host %>
-    password: <%= Rails.application.credentials.db.password %>
-    ssl_mode: <%= Rails.application.credentials.db.ssl_mode %>
-    sslca: <%= Rails.application.credentials.db.sslca %>
-  <% end %>
+  <<: *default 
+  database: <%= Rails.application.credentials.db.database %>
+  username: <%= Rails.application.credentials.db.username %>
+  host: <%= Rails.application.credentials.db.host %>
+  password: <%= Rails.application.credentials.db.password %>
+  ssl_mode: <%= Rails.application.credentials.db.ssl_mode %>
+  sslca: <%= Rails.application.credentials.db.sslca %>
+<% end %>
 
+<% if Rails.env.staging? %>
 staging:
   <<: *default
-  <% if Rails.env.staging? %>
-    database: <%= Rails.application.credentials.db.database %>
-    username: <%= Rails.application.credentials.db.username %>
-    host: <%= Rails.application.credentials.db.host %>
-    password: <%= Rails.application.credentials.db.password %>
-    ssl_mode: <%= Rails.application.credentials.db.ssl_mode %>
-    sslca: <%= Rails.application.credentials.db.sslca %>
-  <% end %>
+  database: <%= Rails.application.credentials.db.database %>
+  username: <%= Rails.application.credentials.db.username %>
+  host: <%= Rails.application.credentials.db.host %>
+  password: <%= Rails.application.credentials.db.password %>
+  ssl_mode: <%= Rails.application.credentials.db.ssl_mode %>
+  sslca: <%= Rails.application.credentials.db.sslca %>
+<% end %>
