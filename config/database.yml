@@ -49,8 +49,25 @@ test:
 # Read https://guides.rubyonrails.org/configuring.html#configuring-a-database
 # for a full overview on how database connection configuration can be specified.
 #
+
+<% if Rails.env.production? %>
 production:
+  <<: *default 
+  database: <%= Rails.application.credentials.db.database %>
+  username: <%= Rails.application.credentials.db.username %>
+  host: <%= Rails.application.credentials.db.host %>
+  password: <%= Rails.application.credentials.db.password %>
+  ssl_mode: <%= Rails.application.credentials.db.ssl_mode %>
+  sslca: <%= Rails.application.credentials.db.sslca %>
+<% end %>
+
+<% if Rails.env.staging? %>
+staging:
   <<: *default
-  database: app_production
-  username: app
-  password: <%= ENV["APP_DATABASE_PASSWORD"] %>
+  database: <%= Rails.application.credentials.db.database %>
+  username: <%= Rails.application.credentials.db.username %>
+  host: <%= Rails.application.credentials.db.host %>
+  password: <%= Rails.application.credentials.db.password %>
+  ssl_mode: <%= Rails.application.credentials.db.ssl_mode %>
+  sslca: <%= Rails.application.credentials.db.sslca %>
+<% end %>

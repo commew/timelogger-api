@@ -1,5 +1,11 @@
 # slim だと rails の依存エラー
 FROM ruby:3.2.0-buster
+
+# 開発環境では `rails credentials:edit` で使うテキストエディタが必要になるので vim をインストール
+# ローカルに rails をインストールしてる場合は好きなエディタを用いてもよい
+RUN apt-get update && apt-get install -y vim
+ENV EDITOR="vim"
+
 RUN gem install bundler && \
     gem install rails -v "7.0.4"
 RUN useradd -ms /bin/bash -u 1000 dev-user && \

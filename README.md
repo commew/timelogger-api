@@ -63,6 +63,21 @@ rake rswag
 bundle exec rspec
 ```
 
+
+### 機密情報の編集方法
+
+1. config/credentials ディレクトリに鍵ファイルを置く (鍵は共有ドライブにある)
+1. 以下のコマンドを実行すると vim が起動して編集が行える
+
+```
+## 本番環境
+rails credentials:edit --environment production
+
+## 検証環境
+rails credentials:edit --environment staging
+```
+
+
 ### Dockerコンテナ再起動が必要なタイミング
 
 * `bundle install`後。
@@ -73,6 +88,3 @@ bundle exec rspec
 - DB 関連でうまくいかない場合は環境を終了した状態で `rm -rf docker/data` を実行して DB のデータを全削除する。
 - Rails 関連でうまくいかない場合は `rm -rf vendor` を実行して依存のインストールをやり直す。
 
-## エイリアス
-`. ./alias.sh` コンテナ外から rails などのコマンドを呼ぶ際のエイリアス集を読み込む。  
-お好みの応じて。
