@@ -44,13 +44,6 @@ docker compose down
 以下は基本、apiコンテナ内で行う。つまり、頭に`docker compose exec api`をつけて実行する。
 
 
-#### rswagでスキーマの生成
-
-```
-rake rswag
-```
-
-
 #### rspecでの自動テストの実行
 
 ```
