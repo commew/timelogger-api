@@ -1,11 +1,5 @@
 # How to Start
 
-## 開発環境のURL
-
-### swagger-ui
-http://localhost:3000/api-docs/index.html
-
-
 ## 初回構築
 ```
 ## バックグラウンドで環境起動、API サーバーの出力を監視
