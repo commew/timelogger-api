@@ -8,3 +8,5 @@
 /.*
 /alias.sh
 /start_dev_server.sh
+/.github
+/config/credentials/*.key
