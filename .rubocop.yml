@@ -15,6 +15,11 @@ RSpec/EmptyExampleGroup:
   Exclude:
     - spec/requests/api/**/*
 
+# specのexampleの行数を制限するルール。だが、デフォルトの5行はさすがに実用的じゃない。
+# 10行でも多分厳しいので、必要に応じて調整してよさそう。
+RSpec/ExampleLength:
+  Max: 10
+
 Style/BlockComments:
   Exclude:
     # 適切な使い方で、自動修正してもおかしいだけ。
