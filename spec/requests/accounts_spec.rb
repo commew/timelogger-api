@@ -10,7 +10,7 @@ RSpec.describe 'Accounts' do
     it 'returns http created' do
       post '/accounts', params: open_id_providers
 
-      expect(response).to have_http_status(:created)
+      expect(response).to have_http_status(201)
     end
 
     it 'returns requested Request-Id in header' do
