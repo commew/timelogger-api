@@ -15,10 +15,10 @@ RSpec.describe 'Accounts' do
 
     it 'returns requested Request-Id in header' do
       post '/accounts', params: open_id_providers, headers: {
-        'X-Request-Id': '1234-5678'
+        'Request-Id': '1234-5678'
       }
 
-      expect(response.headers['X-Request-Id']).to eq('1234-5678')
+      expect(response.headers['Request-Id']).to eq('1234-5678')
     end
 
     it 'returns id' do
