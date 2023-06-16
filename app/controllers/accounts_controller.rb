@@ -1,5 +1,3 @@
-require 'securerandom'
-
 class AccountsController < ApplicationController
   def post
     if (account = Account.create(sub: params['sub'], provider: params['provider'])).invalid?
