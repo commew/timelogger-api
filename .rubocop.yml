@@ -14,6 +14,12 @@ AllCops:
 RSpec/ExampleLength:
   Max: 10
 
+# シンボル(＝ステータスメッセージ)はここで自動生成されていて、変更されうるので数
+# 値(＝ステータスコード)を直に使う。
+# https://github.com/rack/rack/blob/main/lib/rack/utils.rb#L481-L484
+RSpec/Rails/HttpStatus:
+  EnforcedStyle: numeric
+
 Style/BlockComments:
   Exclude:
     # 適切な使い方で、自動修正してもおかしいだけ。
