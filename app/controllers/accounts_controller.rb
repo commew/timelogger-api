@@ -26,7 +26,7 @@ class AccountsController < ApplicationController
     render json: {
       type: 'UNPROCESSABLE_ENTITY',
       title: 'Unprocessable Entity.',
-      invalidParams: account.errors
+      invalidParams: account.errors.map { |error| { name: error.attribute, reason: error.message } }
     }, status: :unprocessable_entity
   end
 end

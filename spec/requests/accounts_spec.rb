@@ -51,9 +51,12 @@ RSpec.describe 'Accounts' do
         {
           'type' => 'UNPROCESSABLE_ENTITY',
           'title' => 'Unprocessable Entity.',
-          'invalidParams' => {
-            'provider' => ["can't be blank"]
-          }
+          'invalidParams' => [
+            {
+              'name' => 'provider',
+              'reason' => "can't be blank"
+            }
+          ]
         }
       )
     end
