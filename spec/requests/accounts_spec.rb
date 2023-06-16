@@ -37,5 +37,25 @@ RSpec.describe 'Accounts' do
         }
       )
     end
+
+    it 'returns 422 if sub is not presented' do
+      post '/accounts', params: { provider: 'google' }
+
+      expect(response).to have_http_status(422)
+    end
+
+    it 'returns 422 if provider is not presented' do
+      post '/accounts', params: { sub: '111111111111111111111' }
+
+      expect(JSON.parse(response.body)).to eq(
+        {
+          'type' => 'UNPROCESSABLE_ENTITY',
+          'title' => 'Unprocessable Entity.',
+          'invalidParams' => {
+            'provider' => ["can't be blank"]
+          }
+        }
+      )
+    end
   end
 end
