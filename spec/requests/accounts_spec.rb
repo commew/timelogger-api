@@ -31,10 +31,12 @@ RSpec.describe 'Accounts' do
       post '/accounts', params: open_id_providers
 
       expect(JSON.parse(response.body)['openIdProviders']).to eq(
-        {
-          'sub' => '111111111111111111111',
-          'provider' => 'google'
-        }
+        [
+          {
+            'sub' => '111111111111111111111',
+            'provider' => 'google'
+          }
+        ]
       )
     end
 

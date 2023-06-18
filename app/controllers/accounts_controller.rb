@@ -13,10 +13,12 @@ class AccountsController < ApplicationController
     render json: {
       id: 1,
       name: '',
-      openIdProviders: {
-        sub: account.sub,
-        provider: account.provider
-      }
+      openIdProviders: [
+        {
+          sub: account.sub,
+          provider: account.provider
+        }
+      ]
     }, status: :created
   end
 
