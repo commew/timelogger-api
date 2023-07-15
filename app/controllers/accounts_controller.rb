@@ -1,4 +1,12 @@
 class AccountsController < ApplicationController
+  include ActionController::HttpAuthentication::Basic::ControllerMethods
+
+  http_basic_authenticate_with(
+    name: Rails.application.credentials.http_basic_authenticate.user,
+    password: Rails.application.credentials.http_basic_authenticate.password,
+    only: :post
+  )
+
   def post
     if (account = Account.create(sub: params['sub'], provider: params['provider'])).invalid?
       return render_validation_errored account
