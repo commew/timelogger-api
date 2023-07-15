@@ -19,7 +19,7 @@ class AccountsController < ApplicationController
 
   def render_created(account)
     render json: {
-      id: 1,
+      id: account.id,
       openIdProviders: [
         {
           sub: account.sub,
