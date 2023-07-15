@@ -8,7 +8,7 @@ class AccountsController < ApplicationController
   )
 
   def post
-    if (account = Account.create(sub: params['sub'], provider: params['provider'])).invalid?
+    if (account = Account.create_with_open_id_provider(params['sub'], params['provider'])).invalid?
       return render_validation_errored account
     end
 
@@ -22,8 +22,8 @@ class AccountsController < ApplicationController
       id: account.id,
       openIdProviders: [
         {
-          sub: account.sub,
-          provider: account.provider
+          sub: account.open_id_providers[0].sub,
+          provider: account.open_id_providers[0].provider
         }
       ]
     }, status: :created
@@ -33,7 +33,12 @@ class AccountsController < ApplicationController
     render json: {
       type: 'UNPROCESSABLE_ENTITY',
       title: 'Unprocessable Entity.',
-      invalidParams: account.errors.map { |error| { name: error.attribute, reason: error.message } }
+      invalidParams: account.open_id_providers[0].errors.map do |error|
+        {
+          name: error.attribute,
+          reason: error.message
+        }
+      end
     }, status: :unprocessable_entity
   end
 end
