@@ -10,9 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_16_104210) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_15_012325) do
   create_table "accounts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "name", default: "", null: false
     t.string "sub", default: "", null: false
     t.string "provider", default: "", null: false
     t.datetime "created_at", null: false
