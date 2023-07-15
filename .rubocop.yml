@@ -4,7 +4,7 @@ AllCops:
   Exclude:
     - bin/{bundle,rails,rake,setup}
     - config/**/*
-    - db/**/*
+    - db/schema.rb
     - docker/**/*
     - vendor/**/*
   NewCops: enable
