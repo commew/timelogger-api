@@ -4,10 +4,10 @@ class AccountsController < ApplicationController
   http_basic_authenticate_with(
     name: Rails.application.credentials.http_basic_authenticate.user,
     password: Rails.application.credentials.http_basic_authenticate.password,
-    only: :post
+    only: :create
   )
 
-  def post
+  def create
     if (account = Account.create_with_open_id_provider(params['sub'], params['provider'])).invalid?
       return render_validation_errored account
     end
