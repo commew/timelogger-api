@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Accounts' do
-  describe 'POST /post' do
+  describe 'POST /accounts' do
     valid_authorization = ActionController::HttpAuthentication::Basic.encode_credentials(
       'valid_user',
       'valid_password'
