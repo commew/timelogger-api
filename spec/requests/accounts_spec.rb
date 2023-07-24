@@ -66,6 +66,26 @@ RSpec.describe 'Accounts' do
       )
     end
 
+    it 'returns bad request if account already exists' do
+      post '/accounts', params: open_id_providers, headers: valid_headers
+      post '/accounts', params: open_id_providers, headers: valid_headers
+
+      expect(response).to have_http_status(400)
+    end
+
+    it 'returns appropriate message if account already exists' do
+      post '/accounts', params: open_id_providers, headers: valid_headers
+      post '/accounts', params: open_id_providers, headers: valid_headers
+
+      expect(JSON.parse(response.body)).to eq(
+        {
+          'type' => 'BAD_REQUEST',
+          'title' => 'Bad Request.',
+          'detail' => 'Account already exists.'
+        }
+      )
+    end
+
     it 'returns 422 if sub is not presented' do
       post '/accounts', params: { provider: 'google' }, headers: valid_headers
 

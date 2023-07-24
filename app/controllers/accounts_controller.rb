@@ -8,8 +8,12 @@ class AccountsController < ApplicationController
   )
 
   def create
-    if (account = Account.create_with_open_id_provider(params['sub'], params['provider'])).invalid?
-      return render_validation_errored account
+    begin
+      if (account = Account.create_with_open_id_provider(params['sub'], params['provider'])).invalid?
+        return render_validation_errored account
+      end
+    rescue ActiveRecord::RecordNotUnique
+      return render_account_already_exists
     end
 
     render_created account
@@ -27,6 +31,14 @@ class AccountsController < ApplicationController
         }
       ]
     }, status: :created
+  end
+
+  def render_account_already_exists
+    render json: {
+      type: 'BAD_REQUEST',
+      title: 'Bad Request.',
+      detail: 'Account already exists.'
+    }, status: :bad_request
   end
 
   def render_validation_errored(account)
