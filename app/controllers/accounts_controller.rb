@@ -22,8 +22,8 @@ class AccountsController < ApplicationController
       id: account.id,
       openIdProviders: [
         {
-          sub: account.open_id_providers[0].sub,
-          provider: account.open_id_providers[0].provider
+          sub: account.open_id_providers.first.sub,
+          provider: account.open_id_providers.first.provider
         }
       ]
     }, status: :created
@@ -33,7 +33,7 @@ class AccountsController < ApplicationController
     render json: {
       type: 'UNPROCESSABLE_ENTITY',
       title: 'Unprocessable Entity.',
-      invalidParams: account.open_id_providers[0].errors.map do |error|
+      invalidParams: account.open_id_providers.first.errors.map do |error|
         {
           name: error.attribute,
           reason: error.message
