@@ -2,28 +2,30 @@ require 'rails_helper'
 
 RSpec.describe 'Accounts' do
   describe 'POST /accounts' do
-    valid_authorization = ActionController::HttpAuthentication::Basic.encode_credentials(
-      'valid_user',
-      'valid_password'
-    )
+    let(:valid_headers) do
+      {
+        Authorization: ActionController::HttpAuthentication::Basic.encode_credentials(
+          'valid_user',
+          'valid_password'
+        )
+      }
+    end
 
-    invalid_authorization = ActionController::HttpAuthentication::Basic.encode_credentials(
-      'valid_user',
-      'invalid_password'
-    )
+    let(:invalid_headers) do
+      {
+        Authorization: ActionController::HttpAuthentication::Basic.encode_credentials(
+          'valid_user',
+          'invalid_password'
+        )
+      }
+    end
 
-    valid_headers = {
-      Authorization: valid_authorization
-    }
-
-    invalid_headers = {
-      Authorization: invalid_authorization
-    }
-
-    open_id_providers = {
-      sub: '111111111111111111111',
-      provider: 'google'
-    }
+    let(:open_id_providers) do
+      {
+        sub: '111111111111111111111',
+        provider: 'google'
+      }
+    end
 
     it 'returns http created' do
       post '/accounts', params: open_id_providers, headers: valid_headers
