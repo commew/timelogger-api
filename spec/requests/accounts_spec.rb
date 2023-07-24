@@ -28,21 +28,19 @@ RSpec.describe 'Accounts' do
     end
 
     context 'when ok' do
-      it 'returns http created' do
+      before do
         post '/accounts', params: open_id_providers, headers: valid_headers
+      end
 
+      it 'returns http created' do
         expect(response).to have_http_status(201)
       end
 
       it 'returns id' do
-        post '/accounts', params: open_id_providers, headers: valid_headers
-
         expect(JSON.parse(response.body)['id']).to be_an(Integer)
       end
 
       it 'returns sub and provider in openIdProviders' do
-        post '/accounts', params: open_id_providers, headers: valid_headers
-
         expect(JSON.parse(response.body)['openIdProviders']).to eq(
           [
             {
@@ -55,68 +53,81 @@ RSpec.describe 'Accounts' do
     end
 
     context 'when authorization failed' do
-      it 'returns http unauthorized' do
+      before do
         post '/accounts', params: open_id_providers, headers: invalid_headers
+      end
 
+      it 'returns http unauthorized' do
         expect(response).to have_http_status(401)
       end
     end
 
     context 'when request-id header included' do
-      it 'returns requested Request-Id in header' do
+      before do
         post '/accounts', params: open_id_providers, headers: valid_headers.merge(
           {
             'Request-Id': '1234-5678'
           }
         )
+      end
 
+      it 'returns requested Request-Id in header' do
         expect(response.headers['Request-Id']).to eq('1234-5678')
       end
     end
 
     context 'when account already exists' do
-      it 'returns bad request' do
+      before do
         post '/accounts', params: open_id_providers, headers: valid_headers
         post '/accounts', params: open_id_providers, headers: valid_headers
+      end
 
+      it 'returns bad request' do
         expect(response).to have_http_status(400)
       end
 
-      it 'returns appropriate message' do
-        post '/accounts', params: open_id_providers, headers: valid_headers
-        post '/accounts', params: open_id_providers, headers: valid_headers
+      it 'returns appropriate type' do
+        expect(JSON.parse(response.body)['type']).to eq('BAD_REQUEST')
+      end
 
-        expect(JSON.parse(response.body)).to eq(
-          {
-            'type' => 'BAD_REQUEST',
-            'title' => 'Bad Request.',
-            'detail' => 'Account already exists.'
-          }
-        )
+      it 'returns appropriate title' do
+        expect(JSON.parse(response.body)['title']).to eq('Bad Request.')
+      end
+
+      it 'returns appropriate detail' do
+        expect(JSON.parse(response.body)['detail']).to eq('Account already exists.')
       end
     end
 
-    context 'when sub or provider is not presented' do
-      it 'returns 422 if sub is not presented' do
-        post '/accounts', params: { provider: 'google' }, headers: valid_headers
+    context 'when sub and provider is not presented' do
+      before do
+        post '/accounts', params: {}, headers: valid_headers
+      end
 
+      it 'returns 422' do
         expect(response).to have_http_status(422)
       end
 
-      it 'returns 422 if provider is not presented' do
-        post '/accounts', params: { sub: '111111111111111111111' }, headers: valid_headers
+      it 'returns appropriate error type' do
+        expect(JSON.parse(response.body)['type']).to eq('UNPROCESSABLE_ENTITY')
+      end
 
-        expect(JSON.parse(response.body)).to eq(
-          {
-            'type' => 'UNPROCESSABLE_ENTITY',
-            'title' => 'Unprocessable Entity.',
-            'invalidParams' => [
-              {
-                'name' => 'provider',
-                'reason' => "can't be blank"
-              }
-            ]
-          }
+      it 'returns appropriate error title' do
+        expect(JSON.parse(response.body)['title']).to eq('Unprocessable Entity.')
+      end
+
+      it 'returns error reasons' do
+        expect(JSON.parse(response.body)['invalidParams']).to eq(
+          [
+            {
+              'name' => 'sub',
+              'reason' => "can't be blank"
+            },
+            {
+              'name' => 'provider',
+              'reason' => "can't be blank"
+            }
+          ]
         )
       end
     end
