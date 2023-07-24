@@ -1,9 +1,13 @@
 # slim だと rails の依存エラー
 FROM ruby:3.2.0-buster
 
-# 開発環境では `rails credentials:edit` で使うテキストエディタが必要になるので vim をインストール
-# ローカルに rails をインストールしてる場合は好きなエディタを用いてもよい
-RUN apt-get update && apt-get install -y vim
+RUN apt-get update && apt-get install -y \
+    # 開発環境では `rails credentials:edit` で使うテキストエディタが必要になるので vim をインストール
+    # ローカルに rails をインストールしてる場合は好きなエディタを用いてもよい
+    vim \
+    # `rails dbconsole` を使えるように mysql-cli をインストール
+    default-mysql-client
+
 ENV EDITOR="vim"
 
 RUN gem install bundler && \
