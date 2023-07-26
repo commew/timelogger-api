@@ -32,15 +32,24 @@ class TaskGroup < ApplicationRecord
   ## account table は別 issue で対応のため、今はコメントアウト
   # belongs_to :account
   # validates :account, presence: true
-  has_many :task_categories, dependent: :destroy
+
+  # API の返り値のキーが categories なのでそれに合わせる
+  has_many :categories, class_name: :TaskCategory, dependent: :destroy
 
   after_create :create_categories
+
+  def as_json
+    super(only: %i[id name],
+          include: [
+            { categories: { only: %i[id name] } }
+          ])
+  end
 
   private
 
   def create_categories
     INIT_DATA[name].each do |category|
-      task_categories.create(category)
+      categories.create(category)
     end
   end
 end

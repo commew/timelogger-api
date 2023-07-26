@@ -7,7 +7,7 @@ RSpec.describe TaskGroup do
       let(:task_group) { create(:task_group) }
 
       it 'affect to create task_categories.' do
-        expect(task_group.task_categories.count).not_to eq(0)
+        expect(task_group.categories.count).not_to eq(0)
       end
     end
   end
