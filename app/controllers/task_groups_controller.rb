@@ -1,0 +1,2 @@
+class TaskGroupsController < ApplicationController
+end
