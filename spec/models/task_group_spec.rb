@@ -19,4 +19,11 @@ RSpec.describe TaskGroup do
       end
     end
   end
+
+  context 'when task_group was deleted' do
+    it 'related task_categories should be deleted as if cascading.' do
+      described_class.create(name: sample_task_group_name).destroy
+      expect(TaskCategory.count).to eq(0)
+    end
+  end
 end
