@@ -4,16 +4,21 @@ AllCops:
   Exclude:
     - bin/{bundle,rails,rake,setup}
     - config/**/*
-    - db/**/*
+    - db/schema.rb
     - docker/**/*
     - vendor/**/*
   NewCops: enable
 
-# rswagのテストで偽陽性になるルール。
-# https://github.com/rubocop/rubocop-rspec/issues/1177
-RSpec/EmptyExampleGroup:
-  Exclude:
-    - spec/requests/api/**/*
+# specのexampleの行数を制限するルール。だが、デフォルトの5行はさすがに実用的じゃない。
+# 15行でも多分厳しいので、必要に応じて調整してよさそう。
+RSpec/ExampleLength:
+  Max: 15
+
+# シンボル(＝ステータスメッセージ)はここで自動生成されていて、変更されうるので数
+# 値(＝ステータスコード)を直に使う。
+# https://github.com/rack/rack/blob/main/lib/rack/utils.rb#L481-L484
+RSpec/Rails/HttpStatus:
+  EnforcedStyle: numeric
 
 Style/BlockComments:
   Exclude:
