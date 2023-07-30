@@ -45,6 +45,14 @@ class TaskGroup < ApplicationRecord
           ])
   end
 
+  class << self
+    def create_default_tasks(_account)
+      INIT_DATA.each_key do |task_group_name|
+        create(name: task_group_name)
+      end
+    end
+  end
+
   private
 
   def create_categories

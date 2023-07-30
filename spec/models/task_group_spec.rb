@@ -12,11 +12,18 @@ RSpec.describe TaskGroup do
     end
   end
 
-  context 'when task_group was deleted' do
+  describe 'when task_group was deleted' do
     let(:task_group) { create(:task_group).destroy }
 
     it 'related task_categories should be deleted as if cascading.' do
       expect(TaskCategory.count).to eq(0)
+    end
+  end
+
+  describe '.create_default_tasks' do
+    it 'default task_groups was created.' do
+      described_class.create_default_tasks 'account_will_be_passed'
+      expect(described_class.count).to eq(described_class::INIT_DATA.length)
     end
   end
 end
