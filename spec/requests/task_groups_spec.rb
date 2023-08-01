@@ -7,7 +7,7 @@ RSpec.describe 'TaskGroups' do
     end
 
     it 'response is OK' do
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(200)
     end
 
     context 'when success, inspect body schema' do
