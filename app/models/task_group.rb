@@ -29,9 +29,7 @@ class TaskGroup < ApplicationRecord
     ]
   }.freeze
 
-  ## account table は別 issue で対応のため、今はコメントアウト
-  # belongs_to :account
-  # validates :account, presence: true
+  belongs_to :account
 
   # API の返り値のキーが categories なのでそれに合わせる
   has_many :categories, class_name: :TaskCategory, dependent: :destroy
@@ -46,9 +44,9 @@ class TaskGroup < ApplicationRecord
   end
 
   class << self
-    def create_default_tasks(_account)
-      INIT_DATA.each_key do |task_group_name|
-        create(name: task_group_name)
+    def default_tasks
+      INIT_DATA.each_key.map do |task_group_name|
+        TaskGroup.new(name: task_group_name)
       end
     end
   end
