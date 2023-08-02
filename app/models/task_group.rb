@@ -43,11 +43,9 @@ class TaskGroup < ApplicationRecord
           ])
   end
 
-  class << self
-    def default_tasks
-      INIT_DATA.each_key.map do |task_group_name|
-        TaskGroup.new(name: task_group_name)
-      end
+  def self.default_tasks
+    INIT_DATA.each_key.map do |task_group_name|
+      TaskGroup.new(name: task_group_name)
     end
   end
 

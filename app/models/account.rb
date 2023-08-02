@@ -20,6 +20,8 @@ class Account < ApplicationRecord
     end
   end
 
+  private
+
   def create_task_groups
     task_groups << TaskGroup.default_tasks
   end

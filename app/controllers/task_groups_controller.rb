@@ -1,11 +1,11 @@
 class TaskGroupsController < ApplicationController
   def index
-    render_list
+    render_task_groups
   end
 
   private
 
-  def render_list
+  def render_task_groups
     ## 仮のデータ用意
     ## 本来はリクエストをした account に紐づく TaskGroup の配列を取得する
     account = Account.first || FactoryBot.create(:account)
