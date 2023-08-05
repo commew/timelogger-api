@@ -9,6 +9,11 @@ class AccountsController < ApplicationController
     only: :create
   )
 
+  def index
+    # TODO: テスト用のとりあえずの実装。後でちゃんとアカウント取得を実装する。
+    render json: {}, status: :ok
+  end
+
   def create
     begin
       if (account = Account.create_with_open_id_provider(params['sub'], params['provider'])).invalid?

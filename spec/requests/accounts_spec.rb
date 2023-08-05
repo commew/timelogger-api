@@ -1,6 +1,59 @@
 require 'rails_helper'
 
 RSpec.describe 'Accounts' do
+  describe 'GET /accounts' do
+    let(:valid_headers) do
+      token = JWT.encode(
+        { sub: '111111111111111111111', provider: 'google' },
+        Rails.application.credentials.jwt_hmac_secret
+      )
+
+      {
+        Authorization: "Bearer #{token}"
+      }
+    end
+
+    let(:invalid_headers) do
+      {
+        Authorization: 'Bearer undefined'
+      }
+    end
+
+    context 'when jwt token is valid' do
+      before do
+        get '/accounts', headers: valid_headers
+      end
+
+      it 'returns http ok' do
+        expect(response).to have_http_status(200)
+      end
+
+      # TODO: アカウント取得実装時に追加する
+    end
+
+    context 'when jwt token is invalid' do
+      before do
+        get '/accounts', headers: invalid_headers
+      end
+
+      it 'returns http unauthorized' do
+        expect(response).to have_http_status(401)
+      end
+
+      it 'returns appropriate type' do
+        expect(JSON.parse(response.body)['type']).to eq('UNAUTHENTICATED')
+      end
+
+      it 'returns appropriate title' do
+        expect(JSON.parse(response.body)['title']).to eq('Account is not authenticated.')
+      end
+
+      it 'returns appropriate detail' do
+        expect(JSON.parse(response.body)['detail']).to eq('Not enough or too many segments')
+      end
+    end
+  end
+
   describe 'POST /accounts' do
     let(:valid_headers) do
       {
