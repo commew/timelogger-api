@@ -5,7 +5,7 @@ class ApplicationController < ActionController::API
 
   def authenticate
     begin
-      payload = decode_jwt_token[0]
+      payload = decode_jwt_token.first
     rescue JWT::DecodeError => e
       # 想定しているのは、tokenがおかしいことによるエラーのみ。
       # この場合に発生するのはJWT::DecodeErrorで、たとえばsecretがおかしい場合の
