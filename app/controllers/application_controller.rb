@@ -5,7 +5,7 @@ class ApplicationController < ActionController::API
 
   def authenticate
     begin
-      decoded_token = decode_jwt_token
+      payload = decode_jwt_token[0]
     rescue JWT::DecodeError => e
       # 想定しているのは、tokenがおかしいことによるエラーのみ。
       # この場合に発生するのはJWT::DecodeErrorで、たとえばsecretがおかしい場合の
@@ -15,7 +15,7 @@ class ApplicationController < ActionController::API
       return render_unauthorized e.message
     end
 
-    @account = Account.retrieve_by_open_id_provider decoded_token[0][:sub], decoded_token[0][:provider]
+    @account = Account.retrieve_by_open_id_provider payload[:sub], payload[:provider]
   end
 
   def decode_jwt_token
