@@ -7,9 +7,10 @@ class ApplicationController < ActionController::API
     begin
       payload = decode_jwt_token.first
     rescue JWT::DecodeError => e
-      # 想定しているのは、tokenがおかしいことによるエラーのみ。
-      # この場合に発生するのはJWT::DecodeErrorで、たとえばsecretがおかしい場合の
-      # JWT::VerificationErrorはrethrowする。
+      # JWT::DecodeErrorは、secretがおかしい場合のJWT::VerificationErrorなどの親
+      # クラスでもあるが、ここで見たいのはJWT::DecodeError自身のみ。
+      # 想定しているのは、リクエストに含まれるtokenがおかしいこと。
+      # 参考: https://github.com/jwt/ruby-jwt/blob/695143655b95d843d03d4a98ca43709cbe8169b4/lib/jwt/error.rb#L8-L21
       throw e if e.class != JWT::DecodeError
 
       return render_unauthorized e.message
