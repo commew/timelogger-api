@@ -1,6 +1,6 @@
 class TaskGroup < ApplicationRecord
   # 仮りで初期生成される task_group と task_categories
-  INIT_DATA = {
+  INIT_DATA_HASH = {
     '仕事' => [
       {
         name: '会議'
