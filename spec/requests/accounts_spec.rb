@@ -3,8 +3,9 @@ require 'rails_helper'
 RSpec.describe 'Accounts' do
   describe 'GET /accounts' do
     before do
-      get '/accounts', headers: headers
+      get '/accounts', headers:
     end
+
     let(:valid_headers) do
       token = JWT.encode(
         { sub: '111111111111111111111', provider: 'google' },
