@@ -6,25 +6,17 @@ RSpec.describe 'Accounts' do
       get '/accounts', headers:
     end
 
-    let(:valid_headers) do
-      token = JWT.encode(
-        { sub: '111111111111111111111', provider: 'google' },
-        Rails.application.credentials.jwt_hmac_secret
-      )
-
-      {
-        Authorization: "Bearer #{token}"
-      }
-    end
-
-    let(:invalid_headers) do
-      {
-        Authorization: 'Bearer undefined'
-      }
-    end
-
     context 'when jwt token is valid' do
-      let(:headers) { valid_headers }
+      let(:headers) do
+        token = JWT.encode(
+          { sub: '111111111111111111111', provider: 'google' },
+          Rails.application.credentials.jwt_hmac_secret
+        )
+
+        {
+          Authorization: "Bearer #{token}"
+        }
+      end
 
       it 'returns http ok' do
         expect(response).to have_http_status(200)
@@ -34,7 +26,11 @@ RSpec.describe 'Accounts' do
     end
 
     context 'when jwt token is invalid' do
-      let(:headers) { invalid_headers }
+      let(:headers) do
+        {
+          Authorization: 'Bearer undefined'
+        }
+      end
 
       it 'returns http unauthorized' do
         expect(response).to have_http_status(401)
