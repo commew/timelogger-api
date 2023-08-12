@@ -3,6 +3,10 @@ class ApplicationController < ActionController::API
 
   private
 
+  # TODO: 意図しないオーバーライドを防ぐためにも、この辺はサービスクラスなり作っ
+  # て分けたい。その場合も、jwt_token_from_request, render_unauthorizedはコント
+  # ローラ側の機能なのでそこは残す。
+  # https://github.com/commew/timelogger-api/pull/51#discussion_r1291968045
   def authenticate
     begin
       payload = decode_jwt_token.first
