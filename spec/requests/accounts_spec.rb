@@ -51,6 +51,10 @@ RSpec.describe 'Accounts' do
   end
 
   describe 'POST /accounts' do
+    before do
+      post '/accounts', params:, headers:
+    end
+
     let(:valid_headers) do
       {
         Authorization: ActionController::HttpAuthentication::Basic.encode_credentials(
@@ -77,9 +81,8 @@ RSpec.describe 'Accounts' do
     end
 
     context 'when ok' do
-      before do
-        post '/accounts', params: open_id_providers, headers: valid_headers
-      end
+      let(:params) { open_id_providers }
+      let(:headers) { valid_headers }
 
       it 'returns http created' do
         expect(response).to have_http_status(201)
@@ -102,9 +105,8 @@ RSpec.describe 'Accounts' do
     end
 
     context 'when authorization failed' do
-      before do
-        post '/accounts', params: open_id_providers, headers: invalid_headers
-      end
+      let(:params) { open_id_providers }
+      let(:headers) { invalid_headers }
 
       it 'returns http unauthorized' do
         expect(response).to have_http_status(401)
@@ -112,8 +114,9 @@ RSpec.describe 'Accounts' do
     end
 
     context 'when request-id header included' do
-      before do
-        post '/accounts', params: open_id_providers, headers: valid_headers.merge(
+      let(:params) { open_id_providers }
+      let(:headers) do
+        valid_headers.merge(
           {
             'Request-Id': '1234-5678'
           }
@@ -126,9 +129,12 @@ RSpec.describe 'Accounts' do
     end
 
     context 'when account already exists' do
+      let(:params) { open_id_providers }
+      let(:headers) { valid_headers }
+
+      # すでに登録されているのに、ここで再度POSTする
       before do
-        post '/accounts', params: open_id_providers, headers: valid_headers
-        post '/accounts', params: open_id_providers, headers: valid_headers
+        post '/accounts', params:, headers:
       end
 
       it 'returns bad request' do
@@ -149,9 +155,8 @@ RSpec.describe 'Accounts' do
     end
 
     context 'when sub and provider is not presented' do
-      before do
-        post '/accounts', params: {}, headers: valid_headers
-      end
+      let(:params) { {} }
+      let(:headers) { valid_headers }
 
       it 'returns 422' do
         expect(response).to have_http_status(422)
