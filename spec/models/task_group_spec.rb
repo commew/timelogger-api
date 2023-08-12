@@ -18,27 +18,16 @@ RSpec.describe TaskGroup do
     end
   end
 
-  # #create_categories is registerd to "after_create"
-  describe '#create_categories' do
-    context 'when a task_group created' do
-      let(:task_group) { create(:task_group) }
-
-      it 'affect to create task_categories.' do
-        expect(task_group.categories).not_to be_empty
-      end
-    end
-  end
-
-  describe '.default_tasks' do
+  describe '.init_default_tasks' do
     context 'when there are default task instances' do
-      let(:default_tasks) { described_class.default_tasks }
+      let(:default_tasks) { described_class.init_default_tasks }
 
       it 'task instances each name match default tasks name.' do
-        expect(default_tasks.pluck(:name)).to eq(described_class::INIT_DATA.keys)
+        expect(default_tasks.pluck(:name)).to eq(described_class::INIT_DATA_HASH.keys)
       end
 
-      it 'no categories, because this method don\'t save into database.' do
-        expect(default_tasks.first.categories).to be_empty
+      it 'categories are created.' do
+        expect(default_tasks.first.categories.first).to be_a TaskCategory
       end
     end
   end

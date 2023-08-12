@@ -4,8 +4,6 @@ class Account < ApplicationRecord
 
   validates :open_id_providers, presence: true
 
-  after_create :create_task_groups
-
   def self.retrieve_by_open_id_provider(sub, provider)
     Account
       .joins(:open_id_providers)
@@ -16,13 +14,14 @@ class Account < ApplicationRecord
   def self.create_with_open_id_provider(sub, provider)
     new.tap do |account|
       account.open_id_providers.new(sub:, provider:)
+      account.init_default_task_groups
       account.save
     end
   end
 
-  private
+  # private
 
-  def create_task_groups
-    task_groups << TaskGroup.default_tasks
+  def init_default_task_groups
+    task_groups << TaskGroup.init_default_tasks
   end
 end

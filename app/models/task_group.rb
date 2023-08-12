@@ -34,8 +34,6 @@ class TaskGroup < ApplicationRecord
   # API の返り値のキーが categories なのでそれに合わせる
   has_many :categories, class_name: :TaskCategory, dependent: :destroy
 
-  after_create :create_categories
-
   def as_json
     super(only: %i[id name],
           include: [
@@ -43,17 +41,14 @@ class TaskGroup < ApplicationRecord
           ])
   end
 
-  def self.default_tasks
-    INIT_DATA.each_key.map do |task_group_name|
-      TaskGroup.new(name: task_group_name)
+  def self.init_default_tasks
+    INIT_DATA_HASH.each_key.map do |task_group_name|
+      task_group = TaskGroup.new(name: task_group_name)
+      INIT_DATA_HASH[task_group_name].each do |task_category_name|
+        task_group.categories << [ TaskCategory.new(name: task_category_name) ]
+      end
+      task_group
     end
   end
 
-  private
-
-  def create_categories
-    INIT_DATA[name].each do |category|
-      categories.create(category)
-    end
-  end
 end
