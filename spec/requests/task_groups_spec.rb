@@ -3,13 +3,23 @@ require 'rails_helper'
 RSpec.describe 'TaskGroups' do
   # ここでは正常系のみテストをする
   describe 'GET /task-groups' do
-    context 'an account exists, the account was created using "Account.create_with_open_id_provider"' do
-      let(:open_id_provider) { build :open_id_provider }
-      # 引数が長くなるのを避けるための要約変数
-      let(:sub) { open_id_provider.sub }
-      let(:provider) { open_id_provider.provider }
-      let!(:account) { Account.create_with_open_id_provider sub, provider }
-      let(:headers) {
+    context 'when an account exists, the account was created using "Account.create_with_open_id_provider"' do
+      before do
+        account # let を評価させる、let" は rubocop に怒られたのでこの方法にした
+        get '/task-groups', headers:
+      end
+
+      let(:open_id_provider) { build(:open_id_provider) }
+      let(:account) do
+        # factory ではなく .create_with_open_id_provider により
+        # TaskGroup を初期でセットする
+        sub = open_id_provider.sub
+        provider = open_id_provider.provider
+        Account.create_with_open_id_provider sub, provider
+      end
+      let(:headers) do
+        sub = open_id_provider.sub
+        provider = open_id_provider.provider
         token = JWT.encode(
           { sub:, provider: },
           Rails.application.credentials.jwt_hmac_secret
@@ -17,59 +27,55 @@ RSpec.describe 'TaskGroups' do
         {
           Authorization: "Bearer #{token}"
         }
-      }
-      before do
-        # Account.create_with_open_id_provider open_id_provider.as_json
-        get '/task-groups', headers:
+      end
+      # as_json の返す値の正しさは、TaskGroup, TaskCatetory でのテスト対象
+      let(:expected) do
+        {
+          'groups' => account.task_groups.as_json
+        }
       end
 
       it 'response is OK' do
         expect(response).to have_http_status(200)
       end
 
-      context 'when success, inspect body schema' do
-        let(:result) { JSON.parse(response.body) }
-        # 本来は authorization で account を特定するが、
-        # as_json の返す値の正しさは、TaskGroup, TaskCatetory でのテスト対象
-        let(:expected) do
-          {
-            'groups' => account.task_groups.as_json
-          }
-        end
+      it 'returns expected hash.' do
+        result = JSON.parse(response.body)
+        expect(result).to eq(expected)
+      end
+    end
 
-        it 'returns expected hash.' do
-          expect(result).to eq(expected)
-        end
+    context 'when other account was created, which has no task_groups' do
+      before do
+        create(:account, open_id_providers: [open_id_provider])
+        get '/task-groups', headers:
       end
 
-      context 'other account was created, without using Account.create_with_open_id_provider: it means new account has no task_groups' do
-        let(:open_id_provider) { build :open_id_provider, sub: '888888888888888888888' }
-        let!(:account) { create :account, open_id_providers: [open_id_provider] }
-        # 引数が長くなるのを避けるための要約変数
-        let(:sub) { open_id_provider.sub }
-        let(:provider) { open_id_provider.provider }
-        let(:headers) {
-          token = JWT.encode(
-            { sub:, provider: },
-            Rails.application.credentials.jwt_hmac_secret
-          )
-          {
-            Authorization: "Bearer #{token}"
-          }
+      let(:open_id_provider) { build(:open_id_provider, sub: '888888888888888888888') }
+      let(:headers) do
+        sub = open_id_provider.sub
+        provider = open_id_provider.provider
+        token = JWT.encode(
+          { sub:, provider: },
+          Rails.application.credentials.jwt_hmac_secret
+        )
+        {
+          Authorization: "Bearer #{token}"
         }
-        it 'response is OK' do
-          expect(response).to have_http_status(200)
-        end
-        
-        let(:result) { JSON.parse(response.body) }
-        let(:expected) {
-          {
-            'groups' => []
-          }
+      end
+      let(:expected) do
+        {
+          'groups' => []
         }
-        it 'returns expected hash.' do
-          expect(result).to eq(expected)
-        end
+      end
+
+      it 'response is OK' do
+        expect(response).to have_http_status(200)
+      end
+
+      it 'returns expected hash.' do
+        result = JSON.parse(response.body)
+        expect(result).to eq(expected)
       end
     end
   end

@@ -45,10 +45,9 @@ class TaskGroup < ApplicationRecord
     INIT_DATA_HASH.each_key.map do |task_group_name|
       task_group = TaskGroup.new(name: task_group_name)
       INIT_DATA_HASH[task_group_name].each do |task_category_name|
-        task_group.categories << [ TaskCategory.new(name: task_category_name) ]
+        task_group.categories << [TaskCategory.new(name: task_category_name)]
       end
       task_group
     end
   end
-
 end
