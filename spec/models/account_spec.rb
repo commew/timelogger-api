@@ -41,5 +41,20 @@ RSpec.describe Account do
 
       expect(account).not_to be_valid
     end
+
+    # このファイル全体が後でリファクタされる前提
+    # TaskGroups が作成されることをテスト
+    context 'when an accout created using .create_with_open_id_provider' do
+      let(:open_id_provider) { build(:open_id_provider) }
+      let(:account) do
+        sub = open_id_provider.sub
+        provider = open_id_provider.provider
+        described_class.create_with_open_id_provider sub, provider
+      end
+
+      it 'are task_groups created' do
+        expect(account.task_groups.first).to be_a TaskGroup
+      end
+    end
   end
 end
