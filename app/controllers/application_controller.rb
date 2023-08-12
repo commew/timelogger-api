@@ -21,6 +21,8 @@ class ApplicationController < ActionController::API
     end
 
     @account = Account.retrieve_by_open_id_provider payload['sub'], payload['provider']
+
+    return render_unauthorized 'Account not exists' unless @account
   end
 
   def decode_jwt_token
