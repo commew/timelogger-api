@@ -1,11 +1,18 @@
 class AccountsController < ApplicationController
   include ActionController::HttpAuthentication::Basic::ControllerMethods
 
+  skip_before_action :authenticate, only: [:create]
+
   http_basic_authenticate_with(
     name: Rails.application.credentials.http_basic_authenticate.user,
     password: Rails.application.credentials.http_basic_authenticate.password,
     only: :create
   )
+
+  def index
+    # TODO: テスト用のとりあえずの実装。後でちゃんとアカウント取得を実装する。
+    render json: {}, status: :ok
+  end
 
   def create
     begin

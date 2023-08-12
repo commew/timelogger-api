@@ -1,7 +1,92 @@
 require 'rails_helper'
 
 RSpec.describe 'Accounts' do
+  describe 'GET /accounts' do
+    before do
+      # TODO: FactoryBotを使うように置き換える。
+      Account.create_with_open_id_provider '111111111111111111111', 'google'
+
+      get '/accounts', headers:
+    end
+
+    context 'when jwt token is valid' do
+      let(:headers) do
+        token = JWT.encode(
+          { sub: '111111111111111111111', provider: 'google' },
+          Rails.application.credentials.jwt_hmac_secret
+        )
+
+        {
+          Authorization: "Bearer #{token}"
+        }
+      end
+
+      it 'returns http ok' do
+        expect(response).to have_http_status(200)
+      end
+
+      # TODO: アカウント取得実装時に追加する
+    end
+
+    context 'when jwt token is valid but account not exists' do
+      let(:headers) do
+        token = JWT.encode(
+          { sub: '222222222222222222222', provider: 'google' },
+          Rails.application.credentials.jwt_hmac_secret
+        )
+
+        {
+          Authorization: "Bearer #{token}"
+        }
+      end
+
+      it 'returns http unauthorized' do
+        expect(response).to have_http_status(401)
+      end
+
+      it 'returns appropriate type' do
+        expect(JSON.parse(response.body)['type']).to eq('UNAUTHENTICATED')
+      end
+
+      it 'returns appropriate title' do
+        expect(JSON.parse(response.body)['title']).to eq('Account is not authenticated.')
+      end
+
+      it 'returns appropriate detail' do
+        expect(JSON.parse(response.body)['detail']).to eq('Account not exists')
+      end
+    end
+
+    context 'when jwt token is invalid' do
+      let(:headers) do
+        {
+          Authorization: 'Bearer undefined'
+        }
+      end
+
+      it 'returns http unauthorized' do
+        expect(response).to have_http_status(401)
+      end
+
+      it 'returns appropriate type' do
+        expect(JSON.parse(response.body)['type']).to eq('UNAUTHENTICATED')
+      end
+
+      it 'returns appropriate title' do
+        expect(JSON.parse(response.body)['title']).to eq('Account is not authenticated.')
+      end
+
+      it 'returns appropriate detail' do
+        expect(JSON.parse(response.body)['detail']).to eq('Not enough or too many segments')
+      end
+    end
+  end
+
   describe 'POST /accounts' do
+    before do
+      post '/accounts', params:, headers:
+    end
+
     let(:valid_headers) do
       {
         Authorization: ActionController::HttpAuthentication::Basic.encode_credentials(
@@ -28,9 +113,8 @@ RSpec.describe 'Accounts' do
     end
 
     context 'when ok' do
-      before do
-        post '/accounts', params: open_id_providers, headers: valid_headers
-      end
+      let(:params) { open_id_providers }
+      let(:headers) { valid_headers }
 
       it 'returns http created' do
         expect(response).to have_http_status(201)
@@ -53,9 +137,8 @@ RSpec.describe 'Accounts' do
     end
 
     context 'when authorization failed' do
-      before do
-        post '/accounts', params: open_id_providers, headers: invalid_headers
-      end
+      let(:params) { open_id_providers }
+      let(:headers) { invalid_headers }
 
       it 'returns http unauthorized' do
         expect(response).to have_http_status(401)
@@ -63,8 +146,9 @@ RSpec.describe 'Accounts' do
     end
 
     context 'when request-id header included' do
-      before do
-        post '/accounts', params: open_id_providers, headers: valid_headers.merge(
+      let(:params) { open_id_providers }
+      let(:headers) do
+        valid_headers.merge(
           {
             'Request-Id': '1234-5678'
           }
@@ -77,9 +161,12 @@ RSpec.describe 'Accounts' do
     end
 
     context 'when account already exists' do
+      let(:params) { open_id_providers }
+      let(:headers) { valid_headers }
+
+      # すでに登録されているのに、ここで再度POSTする
       before do
-        post '/accounts', params: open_id_providers, headers: valid_headers
-        post '/accounts', params: open_id_providers, headers: valid_headers
+        post '/accounts', params:, headers:
       end
 
       it 'returns bad request' do
@@ -100,9 +187,8 @@ RSpec.describe 'Accounts' do
     end
 
     context 'when sub and provider is not presented' do
-      before do
-        post '/accounts', params: {}, headers: valid_headers
-      end
+      let(:params) { {} }
+      let(:headers) { valid_headers }
 
       it 'returns 422' do
         expect(response).to have_http_status(422)
