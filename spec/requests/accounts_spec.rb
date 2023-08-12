@@ -2,6 +2,9 @@ require 'rails_helper'
 
 RSpec.describe 'Accounts' do
   describe 'GET /accounts' do
+    before do
+      get '/accounts', headers: headers
+    end
     let(:valid_headers) do
       token = JWT.encode(
         { sub: '111111111111111111111', provider: 'google' },
@@ -20,9 +23,7 @@ RSpec.describe 'Accounts' do
     end
 
     context 'when jwt token is valid' do
-      before do
-        get '/accounts', headers: valid_headers
-      end
+      let(:headers) { valid_headers }
 
       it 'returns http ok' do
         expect(response).to have_http_status(200)
@@ -32,9 +33,7 @@ RSpec.describe 'Accounts' do
     end
 
     context 'when jwt token is invalid' do
-      before do
-        get '/accounts', headers: invalid_headers
-      end
+      let(:headers) { invalid_headers }
 
       it 'returns http unauthorized' do
         expect(response).to have_http_status(401)
