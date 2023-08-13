@@ -44,8 +44,8 @@ class TaskGroup < ApplicationRecord
   def self.init_default_tasks
     INIT_DATA_HASH.each_key.map do |task_group_name|
       TaskGroup.new(name: task_group_name).tap do |task_group|
-        task_group.categories << INIT_DATA_HASH[task_group_name].map do |task_category_name|
-          TaskCategory.new(name: task_category_name)
+        task_group.categories << INIT_DATA_HASH[task_group_name].map do |task_category|
+          TaskCategory.new(name: task_category[:name])
         end
       end
     end
