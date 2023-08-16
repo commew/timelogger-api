@@ -8,11 +8,11 @@ RSpec.describe Account do
       end
 
       it 'returns account' do
-        expect(described_class.retrieve_by_open_id_provider('111111111111111111111', 'google')).to be_a described_class
+        expect(described_class.retrieve_by_open_id_provider(sub: '111111111111111111111', provider: 'google')).to be_a described_class
       end
 
       it 'does not return account' do
-        expect(described_class.retrieve_by_open_id_provider('222222222222222222222', 'google')).to be_nil
+        expect(described_class.retrieve_by_open_id_provider(sub: '222222222222222222222', provider: 'google')).to be_nil
       end
     end
   end
