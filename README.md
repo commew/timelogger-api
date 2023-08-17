@@ -1,7 +1,18 @@
 # How to Start
 
 ## 初回構築
-```
+
+### 手順
+
+1. ローカル環境用の環境変数管理ファイルを作成する
+2. `docker compose up` で docker 環境を立ち上げる
+3. DB を初期化する
+4. 環境が立ち上がったことの確認
+
+```bash
+## 環境変数を管理するファイルを複製して作成
+cp .env.development .env.development.local
+cp .env.test .env.test.local
 ## バックグラウンドで環境起動、API サーバーの出力を監視
 docker compose up -d && docker compose logs -f api
 ```
