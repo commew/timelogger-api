@@ -11,7 +11,11 @@ RSpec.describe 'Accounts' do
     context 'when jwt token is valid' do
       let(:headers) do
         token = JWT.encode(
-          { sub: '111111111111111111111', provider: 'google' },
+          {
+            sub: '111111111111111111111',
+            provider: 'google',
+            jti: ''
+          },
           Rails.application.credentials.jwt_hmac_secret
         )
 
