@@ -81,6 +81,18 @@ rails credentials:edit --environment staging
 * `bundle install`後。
 
 
+### DB に PlanetScale を使いたい場合
+
+今回のプロジェクトの本番環境では [PlanetScale](https://planetscale.com/)
+をデーターベースとして使用している。
+開発環境・テスト環境でも PlanetScale を使用したい場合、
+以下のファイルに接続情報等を設定することで使用することができる。
+(※PlanetScale でのDB作成、接続情報の取得などは各自にて行ってください)
+
+- .env.development.local
+- .env.test.local
+
+
 ## トラブルシュート
 
 - DB 関連でうまくいかない場合は環境を終了した状態で `rm -rf docker/data` を実行して DB のデータを全削除する。
