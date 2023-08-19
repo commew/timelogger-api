@@ -13,7 +13,7 @@ RSpec.describe 'Accounts' do
       let(:headers) do
         token = JWT.encode(
           { sub: '111111111111111111111', provider: 'google' },
-          Rails.application.credentials.jwt_hmac_secret
+          Rails.application.config_for(:auth)[:jwt_hmac_secret]
         )
 
         {
@@ -32,7 +32,7 @@ RSpec.describe 'Accounts' do
       let(:headers) do
         token = JWT.encode(
           { sub: '222222222222222222222', provider: 'google' },
-          Rails.application.credentials.jwt_hmac_secret
+          Rails.application.config_for(:auth)[:jwt_hmac_secret]
         )
 
         {
