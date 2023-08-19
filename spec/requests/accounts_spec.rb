@@ -3,8 +3,7 @@ require 'rails_helper'
 RSpec.describe 'Accounts' do
   describe 'GET /accounts' do
     before do
-      # TODO: FactoryBotを使うように置き換える。
-      Account.create_with_open_id_provider(sub: '111111111111111111111', provider: 'google')
+      create(:account)
 
       get '/accounts', headers:
     end

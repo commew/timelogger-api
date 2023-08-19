@@ -11,7 +11,7 @@ RSpec.describe Account do
   describe '.retrieve_by_open_id_provider' do
     context 'when account exists' do
       before do
-        described_class.create_with_open_id_provider(**open_id_provider)
+        create(:account)
       end
 
       it 'returns account' do
