@@ -92,6 +92,12 @@ rails credentials:edit --environment staging
 - .env.development.local
 - .env.test.local
 
+特にテスト環境で使用したい場合、rspec 実行前に以下のコマンドを実行する必要がある。
+(もし実行してしまっても、以下のコマンドを実行するようにメッセージが表示される)
+
+```bash
+bin/rails db:migrate RAILS_ENV=test
+```
 
 ## トラブルシュート
 
