@@ -4,7 +4,7 @@ RSpec.describe 'Accounts' do
   describe 'GET /accounts' do
     before do
       # TODO: FactoryBotを使うように置き換える。
-      Account.create_with_open_id_provider '111111111111111111111', 'google'
+      Account.create_with_open_id_provider(sub: '111111111111111111111', provider: 'google')
 
       get '/accounts', headers:
     end
@@ -187,7 +187,13 @@ RSpec.describe 'Accounts' do
     end
 
     context 'when sub and provider is not presented' do
-      let(:params) { {} }
+      let(:params) do
+        {
+          sub: '',
+          provider: ''
+        }
+      end
+
       let(:headers) { valid_headers }
 
       it 'returns 422' do

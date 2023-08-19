@@ -9,21 +9,19 @@ RSpec.describe 'TaskGroups' do
         get '/task-groups', headers:
       end
 
-      let(:open_id_provider) { build(:open_id_provider) }
+      let(:open_id_provider) do
+        {
+          sub: '111111111111111111111',
+          provider: 'google'
+        }
+      end
       let(:account) do
         # factory ではなく .create_with_open_id_provider により
         # TaskGroup を初期でセットする
-        sub = open_id_provider.sub
-        provider = open_id_provider.provider
-        Account.create_with_open_id_provider sub, provider
+        Account.create_with_open_id_provider(**open_id_provider)
       end
       let(:headers) do
-        sub = open_id_provider.sub
-        provider = open_id_provider.provider
-        token = JWT.encode(
-          { sub:, provider: },
-          Rails.application.credentials.jwt_hmac_secret
-        )
+        token = JWT.encode(open_id_provider, Rails.application.credentials.jwt_hmac_secret)
         {
           Authorization: "Bearer #{token}"
         }

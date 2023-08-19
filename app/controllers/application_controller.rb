@@ -20,7 +20,7 @@ class ApplicationController < ActionController::API
       return render_unauthorized e.message
     end
 
-    @account = Account.retrieve_by_open_id_provider **payload.symbolize_keys
+    @account = Account.retrieve_by_open_id_provider(**payload.symbolize_keys)
 
     return render_unauthorized 'Account not exists' unless @account
   end

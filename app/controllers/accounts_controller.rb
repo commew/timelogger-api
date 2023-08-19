@@ -16,7 +16,7 @@ class AccountsController < ApplicationController
 
   def create
     begin
-      if (account = Account.create_with_open_id_provider(params['sub'], params['provider'])).invalid?
+      if (account = Account.create_with_open_id_provider(**account_params.to_h.symbolize_keys)).invalid?
         return render_validation_errored account
       end
     rescue ActiveRecord::RecordNotUnique
@@ -27,6 +27,10 @@ class AccountsController < ApplicationController
   end
 
   private
+
+  def account_params
+    params.permit(:sub, :provider)
+  end
 
   def render_created(account)
     render json: {
