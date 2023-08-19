@@ -26,6 +26,9 @@ require 'support/factory_bot'
 # Checks for pending migrations and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove these lines.
 begin
+  # テスト環境で DB に PlanetScale を使用している場合、
+  # 下記の処理の中で呼ばれる rails db:drop に失敗するためエラーが表示される。
+  # テスト自体は実行されるので、据え置き対応。
   ActiveRecord::Migration.maintain_test_schema!
 rescue ActiveRecord::PendingMigrationError => e
   abort e.to_s.strip
