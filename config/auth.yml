@@ -8,12 +8,16 @@ test:
   basic_authenticate_password: <%= ENV['HTTP_BASIC_AUTHENTICATE_PASSWORD'] %>
   jwt_hmac_secret: <%= ENV['JWT_HMAC_SECRET'] %>
 
+<% if Rails.env.production? %>
 production:
   basic_authenticate_user: <%= Rails.application.credentials.http_basic_authenticate.user %>
   basic_authenticate_password: <%= Rails.application.credentials.http_basic_authenticate.password %>
   jwt_hmac_secret: <%= Rails.application.credentials.jwt_hmac_secret %>
+<% end %>
 
+<% if Rails.env.staging? %>
 staging:
   basic_authenticate_user: <%= Rails.application.credentials.http_basic_authenticate.user %>
   basic_authenticate_password: <%= Rails.application.credentials.http_basic_authenticate.password %>
   jwt_hmac_secret: <%= Rails.application.credentials.jwt_hmac_secret %>
+<% end %>
