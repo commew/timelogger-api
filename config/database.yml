@@ -20,14 +20,33 @@ default: &default
 
 development:
   <<: *default
+  <% if ENV['USE_PLANET_SCALE_AS_DATABASE'] == 'true' %>
+  database: <%= ENV['PLANET_SCALE_DATABASE'] %>
+  username: <%= ENV['PLANET_SCALE_USERNAME'] %>
+  host: <%= ENV['PLANET_SCALE_HOST'] %>
+  password: <%= ENV['PLANET_SCALE_PASSWORD'] %>
+  ssl_mode: <%= ENV['PLANET_SCALE_SSL_MODE'] %>
+  sslca: <%= ENV['PLANET_SCALE_SSLCA'] %>
+  <% else %>
   database: app_development
+  <% end %>
+
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
   <<: *default
+  <% if ENV['USE_PLANET_SCALE_AS_DATABASE'] == 'true' %>
+  database: <%= ENV['PLANET_SCALE_DATABASE'] %>
+  username: <%= ENV['PLANET_SCALE_USERNAME'] %>
+  host: <%= ENV['PLANET_SCALE_HOST'] %>
+  password: <%= ENV['PLANET_SCALE_PASSWORD'] %>
+  ssl_mode: <%= ENV['PLANET_SCALE_SSL_MODE'] %>
+  sslca: <%= ENV['PLANET_SCALE_SSLCA'] %>
+  <% else %>
   database: app_test
+  <% end %>
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is

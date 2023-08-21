@@ -1,7 +1,18 @@
 # How to Start
 
 ## 初回構築
-```
+
+### 手順
+
+1. ローカル環境用の環境変数管理ファイルを作成する
+2. `docker compose up` で docker 環境を立ち上げる
+3. DB を初期化する
+4. 環境が立ち上がったことの確認
+
+```bash
+## 環境変数を管理するファイルを複製して作成
+cp .env.development .env.development.local
+cp .env.test .env.test.local
 ## バックグラウンドで環境起動、API サーバーの出力を監視
 docker compose up -d && docker compose logs -f api
 ```
@@ -69,6 +80,24 @@ rails credentials:edit --environment staging
 
 * `bundle install`後。
 
+
+### DB に PlanetScale を使いたい場合
+
+今回のプロジェクトの本番環境では [PlanetScale](https://planetscale.com/)
+をデーターベースとして使用している。
+開発環境・テスト環境でも PlanetScale を使用したい場合、
+以下のファイルに接続情報等を設定することで使用することができる。
+(※PlanetScale でのDB作成、接続情報の取得などは各自にて行ってください)
+
+- .env.development.local
+- .env.test.local
+
+特にテスト環境で使用したい場合、rspec 実行前に以下のコマンドを実行する必要がある。
+(もし実行してしまっても、以下のコマンドを実行するようにメッセージが表示される)
+
+```bash
+bin/rails db:migrate RAILS_ENV=test
+```
 
 ## トラブルシュート
 

@@ -21,7 +21,10 @@ RSpec.describe 'TaskGroups' do
         Account.create_with_open_id_provider(**open_id_provider)
       end
       let(:headers) do
-        token = JWT.encode(open_id_provider, Rails.application.credentials.jwt_hmac_secret)
+        token = JWT.encode(
+          open_id_provider,
+          Rails.application.config_for(:auth)[:jwt_hmac_secret]
+        )
         {
           Authorization: "Bearer #{token}"
         }
@@ -55,7 +58,7 @@ RSpec.describe 'TaskGroups' do
         provider = open_id_provider.provider
         token = JWT.encode(
           { sub:, provider: },
-          Rails.application.credentials.jwt_hmac_secret
+          Rails.application.config_for(:auth)[:jwt_hmac_secret]
         )
         {
           Authorization: "Bearer #{token}"
