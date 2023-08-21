@@ -1,13 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Account do
-  let(:open_id_provider) do
-    {
-      sub: '111111111111111111111',
-      provider: 'google'
-    }
-  end
-
   describe '.retrieve_by_open_id_provider' do
     context 'when account exists' do
       before do
@@ -26,8 +19,15 @@ RSpec.describe Account do
   end
 
   describe '.create_with_open_id_provider' do
+    let(:sub_and_provider) do
+      {
+        sub: '111111111111111111111',
+        provider: 'google'
+      }
+    end
+
     it 'is valid with open id provider' do
-      account = described_class.create_with_open_id_provider(**open_id_provider)
+      account = described_class.create_with_open_id_provider(**sub_and_provider)
 
       expect(account).to be_valid
     end
@@ -54,7 +54,7 @@ RSpec.describe Account do
     # TaskGroups が作成されることをテスト
     context 'when an accout created using .create_with_open_id_provider' do
       let(:account) do
-        described_class.create_with_open_id_provider(**open_id_provider)
+        described_class.create_with_open_id_provider(**sub_and_provider)
       end
 
       it 'are task_groups created' do
