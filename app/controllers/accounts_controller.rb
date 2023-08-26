@@ -10,8 +10,7 @@ class AccountsController < ApplicationController
   )
 
   def index
-    # TODO: テスト用のとりあえずの実装。後でちゃんとアカウント取得を実装する。
-    render json: {}, status: :ok
+    render json: account_hash(@account), status: :ok
   end
 
   def create
@@ -23,25 +22,13 @@ class AccountsController < ApplicationController
       return render_account_already_exists
     end
 
-    render_created account
+    render json: account_hash(account), status: :created
   end
 
   private
 
   def account_params
     params.permit(:sub, :provider)
-  end
-
-  def render_created(account)
-    render json: {
-      id: account.id,
-      openIdProviders: [
-        {
-          sub: account.open_id_providers.first.sub,
-          provider: account.open_id_providers.first.provider
-        }
-      ]
-    }, status: :created
   end
 
   def render_account_already_exists
@@ -63,5 +50,17 @@ class AccountsController < ApplicationController
         }
       end
     }, status: :unprocessable_entity
+  end
+
+  def account_hash(account)
+    {
+      id: account.id,
+      openIdProviders: [
+        {
+          sub: account.open_id_providers.first.sub,
+          provider: account.open_id_providers.first.provider
+        }
+      ]
+    }
   end
 end

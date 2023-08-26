@@ -11,7 +11,11 @@ RSpec.describe 'Accounts' do
     context 'when jwt token is valid' do
       let(:headers) do
         token = JWT.encode(
-          { sub: '111111111111111111111', provider: 'google' },
+          {
+            sub: '111111111111111111111',
+            provider: 'google',
+            jti: ''
+          },
           Rails.application.config_for(:auth)[:jwt_hmac_secret]
         )
 
@@ -24,7 +28,20 @@ RSpec.describe 'Accounts' do
         expect(response).to have_http_status(200)
       end
 
-      # TODO: アカウント取得実装時に追加する
+      it 'returns id' do
+        expect(JSON.parse(response.body)['id']).to be_an(Integer)
+      end
+
+      it 'returns sub and provider in openIdProviders' do
+        expect(JSON.parse(response.body)['openIdProviders']).to eq(
+          [
+            {
+              'sub' => '111111111111111111111',
+              'provider' => 'google'
+            }
+          ]
+        )
+      end
     end
 
     context 'when jwt token is valid but account not exists' do
