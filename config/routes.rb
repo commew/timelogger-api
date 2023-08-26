@@ -6,9 +6,11 @@ Rails.application.routes.draw do
       patch 'stop'
       patch 'complete'
     end
-  end
-  get 'tasks/recording', 'tasks#recording'
-  get 'tasks/pending', 'tasks#pending'
+     collection do
+       get 'recording'
+       get 'pending'
+     end
+   end
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
