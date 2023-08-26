@@ -3,8 +3,7 @@ require 'rails_helper'
 RSpec.describe 'Accounts' do
   describe 'GET /accounts' do
     before do
-      # TODO: FactoryBotを使うように置き換える。
-      Account.create_with_open_id_provider '111111111111111111111', 'google'
+      create(:account)
 
       get '/accounts', headers:
     end
@@ -12,7 +11,11 @@ RSpec.describe 'Accounts' do
     context 'when jwt token is valid' do
       let(:headers) do
         token = JWT.encode(
-          { sub: '111111111111111111111', provider: 'google' },
+          {
+            sub: '111111111111111111111',
+            provider: 'google',
+            jti: ''
+          },
           Rails.application.config_for(:auth)[:jwt_hmac_secret]
         )
 
@@ -25,7 +28,20 @@ RSpec.describe 'Accounts' do
         expect(response).to have_http_status(200)
       end
 
-      # TODO: アカウント取得実装時に追加する
+      it 'returns id' do
+        expect(JSON.parse(response.body)['id']).to be_an(Integer)
+      end
+
+      it 'returns sub and provider in openIdProviders' do
+        expect(JSON.parse(response.body)['openIdProviders']).to eq(
+          [
+            {
+              'sub' => '111111111111111111111',
+              'provider' => 'google'
+            }
+          ]
+        )
+      end
     end
 
     context 'when jwt token is valid but account not exists' do
@@ -187,7 +203,13 @@ RSpec.describe 'Accounts' do
     end
 
     context 'when sub and provider is not presented' do
-      let(:params) { {} }
+      let(:params) do
+        {
+          sub: '',
+          provider: ''
+        }
+      end
+
       let(:headers) { valid_headers }
 
       it 'returns 422' do
