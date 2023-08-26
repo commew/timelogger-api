@@ -4,8 +4,8 @@ class AccountsController < ApplicationController
   skip_before_action :authenticate, only: [:create]
 
   http_basic_authenticate_with(
-    name: Rails.application.credentials.http_basic_authenticate.user,
-    password: Rails.application.credentials.http_basic_authenticate.password,
+    name: Rails.application.config_for(:auth)[:basic_authenticate_user],
+    password: Rails.application.config_for(:auth)[:basic_authenticate_password],
     only: :create
   )
 

@@ -26,7 +26,7 @@ class ApplicationController < ActionController::API
   end
 
   def decode_jwt_token
-    JWT.decode jwt_token_from_request, Rails.application.credentials.jwt_hmac_secret
+    JWT.decode jwt_token_from_request, Rails.application.config_for(:auth)[:jwt_hmac_secret]
   end
 
   def jwt_token_from_request
