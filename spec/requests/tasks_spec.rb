@@ -49,12 +49,14 @@ RSpec.describe 'Tasks' do
       get '/tasks/recording'
     end
 
-    it 'returns 200 as dummy.' do
-      expect(response).to have_http_status(200)
-    end
+    context 'when recording tasks not exists' do
+      it 'returns http ok' do
+        expect(response).to have_http_status(200)
+      end
 
-    it 'returns empty json' do
-      expect(response.body).to eq('{}')
+      it 'returns empty list' do
+        expect(JSON.parse(response.body)).to eq({ 'tasks' => [] })
+      end
     end
   end
 

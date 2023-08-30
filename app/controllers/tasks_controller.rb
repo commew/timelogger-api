@@ -5,7 +5,8 @@ class TasksController < ApplicationController
   end
 
   def recording
-    render json: {}, status: :ok
+    tasks = []
+    render json: { tasks: }, status: :ok
   end
 
   def pending
