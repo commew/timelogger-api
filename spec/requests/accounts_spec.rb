@@ -3,7 +3,8 @@ require 'rails_helper'
 RSpec.describe 'Accounts' do
   describe 'GET /accounts' do
     before do
-      create(:account)
+      open_id_provider = build(:open_id_provider, sub: '111111111111111111111', provider: 'google')
+      create(:account, open_id_provider:)
 
       get '/accounts', headers:
     end
