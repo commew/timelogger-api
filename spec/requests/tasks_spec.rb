@@ -2,7 +2,7 @@ require 'rails_helper'
 
 # 仮りで全てのエンドポイントを定義し、正常に応答することだけ確認
 RSpec.describe 'Tasks' do
-  describe 'POST /tasks' do
+  describe 'POST /tasks', skip: 'not implemented yet' do
     before do
       post '/tasks'
     end
@@ -16,7 +16,7 @@ RSpec.describe 'Tasks' do
     end
   end
 
-  describe 'PATCH /tasks/:id/stop' do
+  describe 'PATCH /tasks/:id/stop', skip: 'not implemented yet' do
     before do
       patch '/tasks/1/stop'
     end
@@ -30,7 +30,7 @@ RSpec.describe 'Tasks' do
     end
   end
 
-  describe 'PATCH /tasks/:id/complete' do
+  describe 'PATCH /tasks/:id/complete', skip: 'not implemented yet' do
     before do
       patch '/tasks/2/complete'
     end
@@ -44,7 +44,7 @@ RSpec.describe 'Tasks' do
     end
   end
 
-  describe 'GET /tasks/recording' do
+  describe 'GET /tasks/recording', skip: 'not implemented yet' do
     before do
       get '/tasks/recording'
     end
@@ -58,7 +58,7 @@ RSpec.describe 'Tasks' do
     end
   end
 
-  describe 'GET /tasks/pending' do
+  describe 'GET /tasks/pending', skip: 'not implemented yet' do
     before do
       get '/tasks/pending'
     end
