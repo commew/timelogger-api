@@ -18,13 +18,9 @@ class Task < ApplicationRecord
   end
 
   def duration
-    duration_seconds = 0
-    task_time_units.each do |unit|
-      next if unit.end_at.nil?
-
-      duration_seconds += unit.end_at - unit.start_at
+    task_time_units.sum do |unit|
+      unit.end_at.nil? ? 0 : unit.end_at - unit.start_at
     end
-    duration_seconds
   end
 
   def make_pending(end_at = nil)

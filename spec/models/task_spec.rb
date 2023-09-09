@@ -1,30 +1,21 @@
 require 'rails_helper'
 
-Rspec.describe Task do
-  describe '#status', skip: 'not implemented yet' do
-    let(:task_time_units) { [build(:task_time_unit, start_at:) ]}
-    let(:task) { create :task, task_time_units:}
-  end
+RSpec.describe Task do
+  describe '#duration' do
+    context 'when task have some task_time_units' do
+      let(:task_time_units) do
+        [
+          build(:task_time_unit, start_at: '2023-09-09T00:00:00Z', end_at: '2023-09-09T00:40:00Z'),
+          build(:task_time_unit, start_at: '2023-09-10T00:00:00Z', end_at: '2023-09-10T00:03:21Z'),
+          build(:task_time_unit, start_at: '2023-09-11T00:00:00Z', end_at: nil)
+        ]
+      end
+      let(:task) { create(:task, task_time_units:) }
 
-  describe '#start_at', skip: 'not implemented yet' do
+      it 'returns expected seconds.' do
+        expected = (40 * 60) + (3 * 60) + 21
+        expect(task.duration).to eq(expected)
+      end
+    end
   end
-
-  describe '#end_at', skip: 'not implemented yet' do
-  end
-
-  describe '#duration', skip: 'not implemented yet' do
-  end
-
-  describe '#make_pending', skip: 'not implemented yet' do
-  end
-
-  describe '#make_recording', skip: 'not implemented yet' do
-  end
-  
-  describe '#make_completed', skip: 'not implemented yet' do
-  end
-  
-  describe '.start_recording', skip: 'not implemented yet' do
-  end
-  
 end
