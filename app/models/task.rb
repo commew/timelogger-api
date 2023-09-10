@@ -1,20 +1,26 @@
 class Task < ApplicationRecord
+  STATUS = {
+    recording: :recording,
+    pending: :pending,
+    completed: :completed
+  }.freeze
+
   belongs_to :task_category
   has_many :task_time_units, dependent: :destroy
 
   def status
-    return :completed if completed
-    return :recording if task_time_units.last.end_at.nil?
+    return STATUS[:completed] if completed
+    return STATUS[:recording] if end_at.nil?
 
-    :pending
+    STATUS[:pending]
   end
 
   def start_at
-    task.task_time_units.first.start_at
+    task_time_units.first.start_at
   end
 
   def end_at
-    task.task_time_units.last.end_at
+    task_time_units.last.end_at
   end
 
   def duration
@@ -24,17 +30,18 @@ class Task < ApplicationRecord
   end
 
   def make_pending(end_at = nil)
-    latest_time_unit = task_time_units.last
-    raise 'Task is already stoped.' unless status == :recording
+    current_status = status
+    raise "Task status is #{current_status}, could not make status pending." unless current_status == STATUS[:recording]
 
     end_at = Time.zone.now if end_at.nil?
     transaction do
-      latest_time_unit.update end_at:
+      task_time_units.last.update end_at:
     end
   end
 
   def make_recording(start_at = nil)
-    raise 'Task is already recording.' unless status == :pending
+    current_status = status
+    raise "Task status is #{current_status}, could not make status recording." unless current_status == STATUS[:pending]
 
     start_at = Time.zone.now if start_at.nil?
     transaction do
@@ -43,6 +50,8 @@ class Task < ApplicationRecord
   end
 
   def make_completed(end_at = nil)
+    raise 'Task status is already completed.' if status == STATUS[:completed]
+
     end_at = Time.zone.now if end_at.nil?
     latest_time_unit = task_time_units.last
     latest_time_unit.end_at = end_at if latest_time_unit.end_at.nil?
