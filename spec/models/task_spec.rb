@@ -197,12 +197,27 @@ RSpec.describe Task do
   end
 
   describe '.start_recording' do
+    let(:account) { create :account }
     let(:task_category) { build(:task_category) }
-    let(:task_group) { create(:task_group, task_categories: [task_category]) }
     let(:start_at) { '2023-09-10T00:00:00Z' }
 
-    it 'returns new Task instance.' do
-      expect(described_class.start_recording(task_category, start_at)).to be_a(described_class)
+    before do
+      create(:task_group, account:, categories: [task_category])
+    end
+
+    it 'returns valid Task instance.' do
+      task = described_class.start_recording(task_category, start_at, account)
+      expect(task.valid?).to eq(true)
+    end
+
+    context 'when requested account does not associate task_category' do
+      let(:open_id_provider) { build :open_id_provider, sub: '111111111111111111112' }
+      let(:other_account) { create :account, open_id_providers: [open_id_provider] }
+
+      it 'returns invalid Task instance.' do
+        task = described_class.start_recording(task_category, start_at, other_account)
+        expect(task.invalid?).to eq(true)
+      end
     end
   end
 end
