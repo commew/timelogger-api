@@ -62,6 +62,7 @@ RSpec.describe 'Tasks' do
     context 'when 2 recording tasks and 2 other tasks exists' do
       let(:task_category) { create(:task_category) }
       let(:task_category2) { create(:task_category) }
+
       before do
         # 終了したタスク
         create(
@@ -87,7 +88,7 @@ RSpec.describe 'Tasks' do
         # 記録中のタスク、計測は1回目
         create(
           :task,
-          task_category: task_category,
+          task_category:,
           task_time_units: TaskTimeUnit.create(
             [
               { start_at: '2023-01-01 10:00:00' }

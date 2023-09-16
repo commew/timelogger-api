@@ -6,25 +6,11 @@ class TasksController < ApplicationController
 
   def recording
     task_ids = Task
-      .joins(:task_time_units)
-      .merge(TaskTimeUnit.where(end_at: nil))
-      .pluck(:id)
+               .joins(:task_time_units)
+               .merge(TaskTimeUnit.where(end_at: nil))
+               .pluck(:id)
 
-    tasks = Task.preload(:task_time_units).where(id: task_ids)
-
-    render json: {
-      tasks: tasks.map do |task|
-        {
-          id: task.id,
-          status: 'recording',
-          startAt: task.start_at&.rfc3339,
-          endAt: task.end_at&.rfc3339,
-          duration: task.duration,
-          taskGroupId: task.task_category.id,
-          taskCategoryId: task.task_category.task_group.id
-        }
-      end
-    }, status: :ok
+    render_tasks Task.preload(:task_time_units).where(id: task_ids)
   end
 
   def pending
@@ -37,5 +23,25 @@ class TasksController < ApplicationController
 
   def complete
     render json: {}, status: :ok
+  end
+
+  private
+
+  def render_tasks(tasks)
+    render json: {
+      tasks: tasks.map { |task| build_task_json task }
+    }, status: :ok
+  end
+
+  def build_task_json(task)
+    {
+      id: task.id,
+      status: 'recording',
+      startAt: task.start_at&.rfc3339,
+      endAt: task.end_at&.rfc3339,
+      duration: task.duration,
+      taskGroupId: task.task_category.id,
+      taskCategoryId: task.task_category.task_group.id
+    }
   end
 end
