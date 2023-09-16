@@ -1,5 +1,4 @@
 class TasksController < ApplicationController
-  skip_before_action :authenticate
   def create
     render json: {}, status: :ok
   end
