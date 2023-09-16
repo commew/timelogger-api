@@ -17,11 +17,9 @@ class TasksController < ApplicationController
         {
           id: task.id,
           status: 'recording',
-          # TODO: モデルをマージしたら直す
-          startAt: task.task_time_units.minimum(:start_at)&.rfc3339,
-          endAt: task.task_time_units.minimum(:end_at)&.rfc3339,
-          # TODO
-          duration: '',
+          startAt: task.start_at&.rfc3339,
+          endAt: task.end_at&.rfc3339,
+          duration: task.duration,
           taskGroupId: task.task_category.id,
           taskCategoryId: task.task_category.task_group.id
         }

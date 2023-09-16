@@ -130,7 +130,6 @@ RSpec.describe 'Tasks' do
         expect(JSON.parse(response.body)['tasks'][0]['endAt']).to be_nil
       end
 
-      # TODO
       it 'returns appropriate task duration' do
         expect(JSON.parse(response.body)['tasks'][0]['duration']).to eq(0)
       end
@@ -155,9 +154,8 @@ RSpec.describe 'Tasks' do
         expect(JSON.parse(response.body)['tasks'][1]['endAt']).to be_nil
       end
 
-      # TODO
       it 'returns appropriate task duration for second task' do
-        expect(JSON.parse(response.body)['tasks'][1]['duration']).to eq(0)
+        expect(JSON.parse(response.body)['tasks'][1]['duration']).to eq(10 * 60)
       end
 
       it 'returns appropriate taskGroupId for second task' do
