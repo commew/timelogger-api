@@ -123,6 +123,10 @@ RSpec.describe 'Tasks' do
         expect(JSON.parse(response.body)['tasks'][0]['id']).not_to be_nil
       end
 
+      it 'returns appropriate task status' do
+        expect(JSON.parse(response.body)['tasks'][0]['status']).to eq(Task::STATUS[:recording].to_s)
+      end
+
       it 'returns appropriate task startAt' do
         expect(JSON.parse(response.body)['tasks'][0]['startAt']).to eq('2023-01-01T10:00:00Z')
       end
@@ -145,6 +149,10 @@ RSpec.describe 'Tasks' do
 
       it 'returns task id for second task' do
         expect(JSON.parse(response.body)['tasks'][1]['id']).not_to be_nil
+      end
+
+      it 'returns appropriate task status for second task' do
+        expect(JSON.parse(response.body)['tasks'][1]['status']).to eq(Task::STATUS[:recording].to_s)
       end
 
       it 'returns appropriate task startAt for second task' do
@@ -249,6 +257,10 @@ RSpec.describe 'Tasks' do
         expect(JSON.parse(response.body)['tasks'][0]['id']).not_to be_nil
       end
 
+      it 'returns appropriate task status' do
+        expect(JSON.parse(response.body)['tasks'][0]['status']).to eq(Task::STATUS[:pending].to_s)
+      end
+
       it 'returns appropriate task startAt' do
         expect(JSON.parse(response.body)['tasks'][0]['startAt']).to eq('2023-01-01T10:00:00Z')
       end
@@ -271,6 +283,10 @@ RSpec.describe 'Tasks' do
 
       it 'returns task id for second task' do
         expect(JSON.parse(response.body)['tasks'][1]['id']).not_to be_nil
+      end
+
+      it 'returns appropriate task status for second task' do
+        expect(JSON.parse(response.body)['tasks'][1]['status']).to eq(Task::STATUS[:pending].to_s)
       end
 
       it 'returns appropriate task startAt for second task' do
