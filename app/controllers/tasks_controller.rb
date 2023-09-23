@@ -38,7 +38,7 @@ class TasksController < ApplicationController
     {
       id: task.id,
       status: 'recording',
-      startAt: task.start_at&.rfc3339,
+      startAt: task.start_at.rfc3339,
       endAt: task.end_at&.rfc3339 || '0000-00-00T00:00:00Z',
       duration: task.duration,
       taskGroupId: task.task_category.id,
