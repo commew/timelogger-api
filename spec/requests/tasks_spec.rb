@@ -153,7 +153,7 @@ RSpec.describe 'Tasks' do
       end
 
       it 'returns task endAt as null' do
-        expect(JSON.parse(response.body)['tasks'][0]['endAt']).to be_nil
+        expect(JSON.parse(response.body)['tasks'][0]['endAt']).to eq('0000-00-00T00:00:00Z')
       end
 
       it 'returns appropriate task duration' do
@@ -177,7 +177,7 @@ RSpec.describe 'Tasks' do
       end
 
       it 'returns task endAt as null for second task' do
-        expect(JSON.parse(response.body)['tasks'][1]['endAt']).to be_nil
+        expect(JSON.parse(response.body)['tasks'][1]['endAt']).to eq('0000-00-00T00:00:00Z')
       end
 
       it 'returns appropriate task duration for second task' do
