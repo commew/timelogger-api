@@ -207,6 +207,16 @@ RSpec.describe 'Tasks' do
 
     context 'when pending tasks not exists' do
       before do
+        # 停止中のタスク、ただしほかのアカウントの
+        create(
+          :task,
+          task_time_units: TaskTimeUnit.create(
+            [
+              { start_at: '2023-01-01 10:00:00', end_at: '2023-01-01 10:10:00' }
+            ]
+          )
+        )
+
         get '/tasks/pending', headers: headers(account)
       end
 
@@ -220,13 +230,15 @@ RSpec.describe 'Tasks' do
     end
 
     context 'when 2 pending tasks and 2 other tasks exists' do
-      let(:task_category) { create(:task_category) }
-      let(:task_category2) { create(:task_category) }
+      let(:task_group) { create(:task_group, account:) }
+      let(:task_category) { create(:task_category, task_group:) }
+      let(:task_category2) { create(:task_category, task_group:) }
 
       before do
         # 記録中のタスク
         create(
           :task,
+          task_category:,
           task_time_units: TaskTimeUnit.create(
             [
               { start_at: '2023-01-01 10:00:00', end_at: '2023-01-01 10:10:00' },
@@ -239,6 +251,7 @@ RSpec.describe 'Tasks' do
         create(
           :task,
           completed: true,
+          task_category:,
           task_time_units: TaskTimeUnit.create(
             [
               { start_at: '2023-01-01 10:00:00', end_at: '2023-01-01 10:10:00' }

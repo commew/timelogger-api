@@ -17,7 +17,9 @@ class TasksController < ApplicationController
   def pending
     task_ids = Task
                .joins(:task_time_units)
+               .joins(task_category: :task_group)
                .where(completed: false)
+               .merge(TaskGroup.where(account_id: @account))
                .group('tasks.id')
                .having('COUNT(*) = SUM(IF(task_time_units.end_at IS NOT NULL, 1, 0))')
                .pluck(:id)
