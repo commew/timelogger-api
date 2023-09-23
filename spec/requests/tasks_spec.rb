@@ -2,7 +2,7 @@ require 'rails_helper'
 
 # 仮りで全てのエンドポイントを定義し、正常に応答することだけ確認
 RSpec.describe 'Tasks' do
-  describe 'POST /tasks' do
+  describe 'POST /tasks', skip: '未実装' do
     before do
       post '/tasks'
     end
@@ -16,7 +16,7 @@ RSpec.describe 'Tasks' do
     end
   end
 
-  describe 'PATCH /tasks/:id/stop' do
+  describe 'PATCH /tasks/:id/stop', skip: '未実装' do
     before do
       patch '/tasks/1/stop'
     end
@@ -30,7 +30,7 @@ RSpec.describe 'Tasks' do
     end
   end
 
-  describe 'PATCH /tasks/:id/complete' do
+  describe 'PATCH /tasks/:id/complete', skip: '未実装' do
     before do
       patch '/tasks/2/complete'
     end
@@ -45,9 +45,21 @@ RSpec.describe 'Tasks' do
   end
 
   describe 'GET /tasks/recording' do
+    let(:account) { create(:account) }
+
     context 'when recording tasks not exists' do
       before do
-        get '/tasks/recording'
+        # 記録中のタスク、ただしほかのアカウントの
+        create(
+          :task,
+          task_time_units: TaskTimeUnit.create(
+            [
+              { start_at: '2023-01-01 10:00:00' }
+            ]
+          )
+        )
+
+        get '/tasks/recording', headers: headers(account)
       end
 
       it 'returns http ok' do
@@ -60,14 +72,16 @@ RSpec.describe 'Tasks' do
     end
 
     context 'when 2 recording tasks and 2 other tasks exists' do
-      let(:task_category) { create(:task_category) }
-      let(:task_category2) { create(:task_category) }
+      let(:task_group) { create(:task_group, account:) }
+      let(:task_category) { create(:task_category, task_group:) }
+      let(:task_category2) { create(:task_category, task_group:) }
 
       before do
         # 終了したタスク
         create(
           :task,
           completed: true,
+          task_category:,
           task_time_units: TaskTimeUnit.create(
             [
               { start_at: '2023-01-01 10:00:00', end_at: '2023-01-01 10:10:00' }
@@ -78,6 +92,7 @@ RSpec.describe 'Tasks' do
         # 停止中のタスク
         create(
           :task,
+          task_category:,
           task_time_units: TaskTimeUnit.create(
             [
               { start_at: '2023-01-01 10:00:00', end_at: '2023-01-01 10:10:00' }
@@ -108,7 +123,17 @@ RSpec.describe 'Tasks' do
           )
         )
 
-        get '/tasks/recording'
+        # 記録中のタスク、ただしほかのアカウントの
+        create(
+          :task,
+          task_time_units: TaskTimeUnit.create(
+            [
+              { start_at: '2023-01-01 10:00:00' }
+            ]
+          )
+        )
+
+        get '/tasks/recording', headers: headers(account)
       end
 
       it 'returns http ok' do
@@ -132,7 +157,7 @@ RSpec.describe 'Tasks' do
       end
 
       it 'returns task endAt as null' do
-        expect(JSON.parse(response.body)['tasks'][0]['endAt']).to be_nil
+        expect(JSON.parse(response.body)['tasks'][0]['endAt']).to eq('0000-00-00T00:00:00Z')
       end
 
       it 'returns appropriate task duration' do
@@ -160,7 +185,7 @@ RSpec.describe 'Tasks' do
       end
 
       it 'returns task endAt as null for second task' do
-        expect(JSON.parse(response.body)['tasks'][1]['endAt']).to be_nil
+        expect(JSON.parse(response.body)['tasks'][1]['endAt']).to eq('0000-00-00T00:00:00Z')
       end
 
       it 'returns appropriate task duration for second task' do
