@@ -11,8 +11,6 @@ module TestHelpers
       Rails.application.config_for(:auth)[:jwt_hmac_secret]
     )
 
-    {
-      Authorization: "Bearer #{token}"
-    }
+    { Authorization: "Bearer #{token}" }
   end
 end
