@@ -203,9 +203,11 @@ RSpec.describe 'Tasks' do
   end
 
   describe 'GET /tasks/pending' do
+    let(:account) { create(:account) }
+
     context 'when pending tasks not exists' do
       before do
-        get '/tasks/pending'
+        get '/tasks/pending', headers: headers(account)
       end
 
       it 'returns http ok' do
@@ -267,7 +269,7 @@ RSpec.describe 'Tasks' do
           )
         )
 
-        get '/tasks/pending'
+        get '/tasks/pending', headers: headers(account)
       end
 
       it 'returns http ok' do
