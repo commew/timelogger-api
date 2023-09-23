@@ -45,9 +45,21 @@ RSpec.describe 'Tasks' do
   end
 
   describe 'GET /tasks/recording' do
+    let(:account) { create(:account) }
+
     context 'when recording tasks not exists' do
       before do
-        get '/tasks/recording', headers:
+        # 記録中のタスク、ただしほかのアカウントの
+        create(
+          :task,
+          task_time_units: TaskTimeUnit.create(
+            [
+              { start_at: '2023-01-01 10:00:00' }
+            ]
+          )
+        )
+
+        get '/tasks/recording', headers: headers(account)
       end
 
       it 'returns http ok' do
@@ -60,14 +72,16 @@ RSpec.describe 'Tasks' do
     end
 
     context 'when 2 recording tasks and 2 other tasks exists' do
-      let(:task_category) { create(:task_category) }
-      let(:task_category2) { create(:task_category) }
+      let(:task_group) { create(:task_group, account:) }
+      let(:task_category) { create(:task_category, task_group:) }
+      let(:task_category2) { create(:task_category, task_group:) }
 
       before do
         # 終了したタスク
         create(
           :task,
           completed: true,
+          task_category:,
           task_time_units: TaskTimeUnit.create(
             [
               { start_at: '2023-01-01 10:00:00', end_at: '2023-01-01 10:10:00' }
@@ -78,6 +92,7 @@ RSpec.describe 'Tasks' do
         # 停止中のタスク
         create(
           :task,
+          task_category:,
           task_time_units: TaskTimeUnit.create(
             [
               { start_at: '2023-01-01 10:00:00', end_at: '2023-01-01 10:10:00' }
@@ -108,7 +123,17 @@ RSpec.describe 'Tasks' do
           )
         )
 
-        get '/tasks/recording', headers:
+        # 記録中のタスク、ただしほかのアカウントの
+        create(
+          :task,
+          task_time_units: TaskTimeUnit.create(
+            [
+              { start_at: '2023-01-01 10:00:00' }
+            ]
+          )
+        )
+
+        get '/tasks/recording', headers: headers(account)
       end
 
       it 'returns http ok' do

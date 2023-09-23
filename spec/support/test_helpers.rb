@@ -1,6 +1,6 @@
 module TestHelpers
-  def headers
-    account = create(:account)
+  def headers(account = nil)
+    account ||= create(:account)
 
     token = JWT.encode(
       {
