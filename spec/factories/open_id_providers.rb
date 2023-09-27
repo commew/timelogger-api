@@ -2,7 +2,7 @@
 # Account との関連なしに DB 保存しようとするとエラーが発生する
 FactoryBot.define do
   factory :open_id_provider do
-    sub { '111111111111111111111' }
+    sub { SecureRandom.uuid }
     provider { 'google' }
   end
 end
