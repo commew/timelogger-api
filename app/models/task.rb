@@ -14,9 +14,9 @@ class Task < ApplicationRecord
   validate :verify_account, on: :create
 
   def verify_account
-    if @account_start_by&.id != task_category.task_group.account_id
-      errors.add(:task_category, 'task_category に関連している account と、task を作成しようとした account が一致しません。')
-    end
+    return if @account_start_by&.id == task_category.task_group.account_id
+
+    errors.add(:task_category, 'task_category に関連している account と、task を作成しようとした account が一致しません。')
   end
 
   def status
