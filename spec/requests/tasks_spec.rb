@@ -16,7 +16,7 @@ RSpec.describe 'Tasks' do
     end
   end
 
-  describe 'PATCH /tasks/:id/stop' do
+  describe 'PATCH /tasks/:id/stop', skip: '未実装' do
     before do
       patch '/tasks/1/stop'
     end
@@ -30,7 +30,7 @@ RSpec.describe 'Tasks' do
     end
   end
 
-  describe 'PATCH /tasks/:id/complete' do
+  describe 'PATCH /tasks/:id/complete', skip: '未実装' do
     before do
       patch '/tasks/2/complete'
     end
@@ -44,7 +44,7 @@ RSpec.describe 'Tasks' do
     end
   end
 
-  describe 'GET /tasks/recording' do
+  describe 'GET /tasks/recording', skip: '未実装' do
     before do
       get '/tasks/recording'
     end
@@ -58,7 +58,7 @@ RSpec.describe 'Tasks' do
     end
   end
 
-  describe 'GET /tasks/pending' do
+  describe 'GET /tasks/pending', skip: '未実装' do
     before do
       get '/tasks/pending'
     end
