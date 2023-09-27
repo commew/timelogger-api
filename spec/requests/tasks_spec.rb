@@ -3,17 +3,31 @@ require 'rails_helper'
 # 仮りで全てのエンドポイントを定義し、正常に応答することだけ確認
 RSpec.describe 'Tasks' do
   describe 'POST /tasks' do
-    before do
-      post '/tasks'
+    let(:task_category) { create(:task_category) }
+
+    let(:account) { create(:account, task_groups: [task_category.task_group]) }
+
+    let(:params) do
+      {
+        taskGroupId: task_category.task_group.id,
+        taskCategoryId: task_category.id,
+        status: Task::STATUS[:recording]
+      }
     end
 
-    it 'returns 200 as dummy.' do
-      expect(response).to have_http_status(200)
+    context 'when task created' do
+      before do
+        post '/tasks', params:, headers: headers(account)
+      end
+
+      it 'returns http created' do
+        expect(response).to have_http_status(201)
+      end
+
+      # TODO
     end
 
-    it 'returns empty json' do
-      expect(response.body).to eq('{}')
-    end
+    # TODO: 異常系も
   end
 
   describe 'PATCH /tasks/:id/stop', skip: '未実装' do
