@@ -161,11 +161,11 @@ RSpec.describe 'Tasks' do
       end
 
       it 'returns appropriate taskGroupId' do
-        expect(JSON.parse(response.body)['tasks'][0]['taskGroupId']).to be(task_category.id)
+        expect(JSON.parse(response.body)['tasks'][0]['taskGroupId']).to be(task_category.task_group.id)
       end
 
       it 'returns appropriate taskCategoryId' do
-        expect(JSON.parse(response.body)['tasks'][0]['taskCategoryId']).to be(task_category.task_group.id)
+        expect(JSON.parse(response.body)['tasks'][0]['taskCategoryId']).to be(task_category.id)
       end
 
       it 'returns task id for second task' do
@@ -185,11 +185,11 @@ RSpec.describe 'Tasks' do
       end
 
       it 'returns appropriate taskGroupId for second task' do
-        expect(JSON.parse(response.body)['tasks'][1]['taskGroupId']).to be(task_category2.id)
+        expect(JSON.parse(response.body)['tasks'][1]['taskGroupId']).to be(task_category2.task_group.id)
       end
 
       it 'returns appropriate taskCategoryId for second task' do
-        expect(JSON.parse(response.body)['tasks'][1]['taskCategoryId']).to be(task_category2.task_group.id)
+        expect(JSON.parse(response.body)['tasks'][1]['taskCategoryId']).to be(task_category2.id)
       end
     end
   end
