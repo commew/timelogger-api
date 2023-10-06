@@ -15,7 +15,16 @@ class TasksController < ApplicationController
   end
 
   def pending
-    render json: {}, status: :ok
+    task_ids = Task
+               .joins(:task_time_units)
+               .joins(task_category: :task_group)
+               .where(completed: false)
+               .merge(TaskGroup.where(account_id: @account))
+               .group('tasks.id')
+               .having('COUNT(*) = SUM(IF(task_time_units.end_at IS NOT NULL, 1, 0))')
+               .pluck(:id)
+
+    render_tasks Task.preload(:task_time_units).where(id: task_ids)
   end
 
   def stop
@@ -37,7 +46,7 @@ class TasksController < ApplicationController
   def build_task_json(task)
     {
       id: task.id,
-      status: 'recording',
+      status: task.status,
       startAt: task.start_at.rfc3339,
       endAt: task.end_at&.rfc3339 || '0000-00-00T00:00:00Z',
       duration: task.duration,
