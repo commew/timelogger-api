@@ -4,7 +4,8 @@ RSpec.describe Account do
   describe '.retrieve_by_open_id_provider' do
     context 'when account exists' do
       before do
-        create(:account)
+        open_id_provider = build(:open_id_provider, sub: '111111111111111111111', provider: 'google')
+        create(:account, open_id_provider:)
       end
 
       it 'returns account' do

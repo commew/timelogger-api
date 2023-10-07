@@ -9,11 +9,27 @@ class TasksController < ApplicationController
   end
 
   def recording
-    render json: {}, status: :ok
+    task_ids = Task
+               .joins(:task_time_units)
+               .joins(task_category: :task_group)
+               .merge(TaskTimeUnit.where(end_at: nil))
+               .merge(TaskGroup.where(account_id: @account))
+               .pluck(:id)
+
+    render_tasks Task.preload(:task_time_units).where(id: task_ids)
   end
 
   def pending
-    render json: {}, status: :ok
+    task_ids = Task
+               .joins(:task_time_units)
+               .joins(task_category: :task_group)
+               .where(completed: false)
+               .merge(TaskGroup.where(account_id: @account))
+               .group('tasks.id')
+               .having('COUNT(*) = SUM(IF(task_time_units.end_at IS NOT NULL, 1, 0))')
+               .pluck(:id)
+
+    render_tasks Task.preload(:task_time_units).where(id: task_ids)
   end
 
   def stop
@@ -28,6 +44,12 @@ class TasksController < ApplicationController
 
   def task_params
     params.permit(:taskGroupId, :taskCategoryId, :status)
+  end
+
+  def render_tasks(tasks)
+    render json: {
+      tasks: tasks.map { |task| build_task_json task }
+    }, status: :ok
   end
 
   def build_task_json(task)
