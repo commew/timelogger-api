@@ -5,6 +5,9 @@ class Task < ApplicationRecord
     completed: :completed
   }.freeze
 
+  TASK_CATEGORY_ACCOUNT_ERROR_MESSAGE =
+    'task_category に関連している account と、task を作成しようとした account が一致しません。'.freeze
+
   belongs_to :task_category
   has_many :task_time_units, dependent: :destroy
 
@@ -14,9 +17,12 @@ class Task < ApplicationRecord
   validate :verify_account, on: :create
 
   def verify_account
-    return if @account_start_by&.id == task_category.task_group.account_id
+    # task_categoryがない場合はそちらでエラーが出るので、こちらでは無視してOK.
+    return unless task_category
 
-    errors.add(:task_category, 'task_category に関連している account と、task を作成しようとした account が一致しません。')
+    return if task_category.task_group.account_id == @account_start_by&.id
+
+    errors.add(:task_category, TASK_CATEGORY_ACCOUNT_ERROR_MESSAGE)
   end
 
   def status

@@ -55,7 +55,65 @@ RSpec.describe 'Tasks' do
       end
     end
 
-    # TODO: 異常系も
+    context "when use another user's taskCategoryId" do
+      let(:another_users_task_category) { create(:task_category) }
+
+      let(:another_user_account) { create(:account, task_groups: [another_users_task_category.task_group]) }
+
+      before do
+        params = {
+          taskGroupId: another_user_account.task_groups.first.id,
+          taskCategoryId: another_users_task_category.id,
+          status: Task::STATUS[:recording]
+        }
+
+        post '/tasks', params:, headers: headers(account)
+      end
+
+      it 'returns http bad request' do
+        expect(response).to have_http_status(422)
+      end
+
+      it 'returns appropriate title' do
+        expect(JSON.parse(response.body)['title']).to eq 'Unprocessable Entity.'
+      end
+
+      it 'returns appropriate type' do
+        expect(JSON.parse(response.body)['type']).to eq 'UNPROCESSABLE_ENTITY'
+      end
+
+      it 'returns appropriate error name' do
+        expect(JSON.parse(response.body)['invalidParams'].first['name']).to eq 'task_category'
+      end
+
+      it 'returns appropriate error reason' do
+        expect(JSON.parse(response.body)['invalidParams'].first['reason'])
+          .to eq Task::TASK_CATEGORY_ACCOUNT_ERROR_MESSAGE
+      end
+    end
+
+    context 'when taskCategoryId is empty' do
+      before do
+        params = {
+          taskGroupId: account.task_groups.first.id,
+          status: Task::STATUS[:recording]
+        }
+
+        post '/tasks', params:, headers: headers(account)
+      end
+
+      it 'returns http bad request' do
+        expect(response).to have_http_status(422)
+      end
+
+      it 'returns appropriate error name' do
+        expect(JSON.parse(response.body)['invalidParams'].first['name']).to eq 'task_category'
+      end
+
+      it 'returns appropriate error reason' do
+        expect(JSON.parse(response.body)['invalidParams'].first['reason']).to eq 'must exist'
+      end
+    end
   end
 
   describe 'PATCH /tasks/:id/stop', skip: '未実装' do
