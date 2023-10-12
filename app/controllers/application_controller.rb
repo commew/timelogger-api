@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::API
+  rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
+
   before_action :authenticate
 
   private
@@ -39,5 +41,13 @@ class ApplicationController < ActionController::API
       title: 'Account is not authenticated.',
       detail: error_message
     }, status: :unauthorized
+  end
+
+  def render_not_found
+    render json: {
+      type: 'NOT_FOUND',
+      title: 'Record not found.',
+      detail: 'Record not found.'
+    }, status: :not_found
   end
 end

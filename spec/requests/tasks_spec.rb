@@ -116,17 +116,35 @@ RSpec.describe 'Tasks' do
     end
   end
 
-  describe 'PATCH /tasks/:id/stop', skip: '未実装' do
-    before do
-      patch '/tasks/1/stop'
+  describe 'PATCH /tasks/:id/stop' do
+    let(:task_category) { create(:task_category) }
+
+    let(:account) { create(:account, task_groups: [task_category.task_group]) }
+
+    let(:task) { Task.start_recording(task_category, Time.zone.now, account) }
+
+    context 'when task exists' do
+      before do
+        patch "/tasks/#{task.id}/stop", headers: headers(account)
+      end
+
+      it 'returns http ok' do
+        expect(response).to have_http_status 200
+      end
+
+      it 'returns empty json' do
+        expect(response.body).to eq('{}')
+      end
     end
 
-    it 'returns 200 as dummy.' do
-      expect(response).to have_http_status(200)
-    end
+    context 'when task not exists' do
+      before do
+        patch '/tasks/0/stop', headers: headers(account)
+      end
 
-    it 'returns empty json' do
-      expect(response.body).to eq('{}')
+      it 'returns http not found' do
+        expect(response).to have_http_status 404
+      end
     end
   end
 

@@ -11,6 +11,8 @@ class TasksController < ApplicationController
   end
 
   def stop
+    task = Task.find(params[:id])
+
     render json: {}, status: :ok
   end
 
