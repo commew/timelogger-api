@@ -10,6 +10,14 @@ class TasksController < ApplicationController
     render json: build_task_json(task), status: :created
   end
 
+  def stop
+    render json: {}, status: :ok
+  end
+
+  def complete
+    render json: {}, status: :ok
+  end
+
   def recording
     task_ids = Task
                .joins(:task_time_units)
@@ -32,14 +40,6 @@ class TasksController < ApplicationController
                .pluck(:id)
 
     render_tasks Task.preload(:task_time_units).where(id: task_ids)
-  end
-
-  def stop
-    render json: {}, status: :ok
-  end
-
-  def complete
-    render json: {}, status: :ok
   end
 
   private
