@@ -80,6 +80,17 @@ RSpec.describe Task do
         expect(task.duration).to eq(expected)
       end
     end
+
+    context 'when end_at has millisecond precision' do
+      let(:task) do
+        task_time_units = [build(:task_time_unit, start_at: '2023-10-12 01:23:45', end_at: '2023-10-12 02:34:56.789')]
+        create(:task, task_time_units:)
+      end
+
+      it 'returns seconds without milliseconds' do
+        expect(task.duration).to eq (1 * 3600) + (11 * 60) + 11
+      end
+    end
   end
 
   describe '#make_pending' do
