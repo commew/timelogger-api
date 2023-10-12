@@ -47,8 +47,7 @@ class Task < ApplicationRecord
   end
 
   def make_pending
-    current_status = status
-    raise "Task status is #{current_status}, could not make status pending." unless current_status == STATUS[:recording]
+    raise TaskStatusError, "Task status is #{status}, could not make status pending." if status != STATUS[:recording]
 
     transaction do
       task_time_units.last.update end_at: Time.zone.now

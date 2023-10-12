@@ -13,8 +13,11 @@ class TasksController < ApplicationController
   def stop
     task = Task.find(params[:id])
 
-    # TODO: エラー処理
-    task.make_pending
+    begin
+      task.make_pending
+    rescue TaskStatusError => e
+      return render_status_error e
+    end
 
     render json: build_task_json(task), status: :ok
   end
@@ -82,5 +85,13 @@ class TasksController < ApplicationController
         }
       end
     }, status: :unprocessable_entity
+  end
+
+  def render_status_error(error)
+    render json: {
+      type: 'INVALID_STATUS_TRANSITION',
+      title: 'Invalid status transition.',
+      detail: error.message
+    }, status: :bad_request
   end
 end

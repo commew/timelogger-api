@@ -116,6 +116,8 @@ RSpec.describe 'Tasks' do
     end
   end
 
+  # rubocop:disable RSpec/MultipleMemoizedHelpers
+  # letが多いが、いずれも必要なため
   describe 'PATCH /tasks/:id/stop' do
     let(:task_category) { create(:task_category) }
 
@@ -176,7 +178,34 @@ RSpec.describe 'Tasks' do
         expect(response).to have_http_status 404
       end
     end
+
+    context 'when task already stopped' do
+      let(:task_already_stopped) do
+        Task.start_recording(task_category, before_30_minutes, account).tap(&:make_pending)
+      end
+
+      before do
+        patch "/tasks/#{task_already_stopped.id}/stop", headers: headers(account)
+      end
+
+      it 'returns http bad request' do
+        expect(response).to have_http_status 400
+      end
+
+      it 'returns appropriate type' do
+        expect(JSON.parse(response.body)['type']).to eq 'INVALID_STATUS_TRANSITION'
+      end
+
+      it 'returns appropriate title' do
+        expect(JSON.parse(response.body)['title']).to eq 'Invalid status transition.'
+      end
+
+      it 'returns appropriate detail' do
+        expect(JSON.parse(response.body)['detail']).to eq 'Task status is pending, could not make status pending.'
+      end
+    end
   end
+  # rubocop:enable RSpec/MultipleMemoizedHelpers
 
   describe 'PATCH /tasks/:id/complete', skip: '未実装' do
     before do
