@@ -13,7 +13,10 @@ class TasksController < ApplicationController
   def stop
     task = Task.find(params[:id])
 
-    render json: {}, status: :ok
+    # TODO: エラー処理
+    task.make_pending
+
+    render json: build_task_json(task), status: :ok
   end
 
   def complete

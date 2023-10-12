@@ -121,10 +121,16 @@ RSpec.describe 'Tasks' do
 
     let(:account) { create(:account, task_groups: [task_category.task_group]) }
 
-    let(:task) { Task.start_recording(task_category, Time.zone.now, account) }
+    let(:now) { Time.zone.now.change(usec: 0) }
+
+    let(:before_30_minutes) { now - 30.minutes }
+
+    let(:task) { Task.start_recording(task_category, before_30_minutes, account) }
 
     context 'when task exists' do
       before do
+        travel_to now
+
         patch "/tasks/#{task.id}/stop", headers: headers(account)
       end
 
@@ -132,8 +138,32 @@ RSpec.describe 'Tasks' do
         expect(response).to have_http_status 200
       end
 
-      it 'returns empty json' do
-        expect(response.body).to eq('{}')
+      it 'returns task id' do
+        expect(JSON.parse(response.body)['id']).to eq task.id
+      end
+
+      it 'returns pending as status' do
+        expect(JSON.parse(response.body)['status']).to eq Task::STATUS[:pending].to_s
+      end
+
+      it 'returns current time as startAt' do
+        expect(JSON.parse(response.body)['startAt']).to eq before_30_minutes.rfc3339
+      end
+
+      it 'returns nil as endAt' do
+        expect(JSON.parse(response.body)['endAt']).to eq now.rfc3339
+      end
+
+      it 'returns 30 minutes as duration' do
+        expect(JSON.parse(response.body)['duration']).to be 30 * 60
+      end
+
+      it 'returns task group id' do
+        expect(JSON.parse(response.body)['taskGroupId']).to be task.task_category.task_group.id
+      end
+
+      it 'returns task category id' do
+        expect(JSON.parse(response.body)['taskCategoryId']).to be task.task_category.id
       end
     end
 
