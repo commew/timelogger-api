@@ -152,7 +152,7 @@ RSpec.describe 'Tasks' do
         expect(JSON.parse(response.body)['startAt']).to eq before_30_minutes.rfc3339
       end
 
-      it 'returns nil as endAt' do
+      it 'returns now as endAt' do
         expect(JSON.parse(response.body)['endAt']).to eq now.rfc3339
       end
 
