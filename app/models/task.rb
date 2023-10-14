@@ -65,7 +65,7 @@ class Task < ApplicationRecord
   end
 
   def make_completed(end_at = nil)
-    raise 'Task status is already completed.' if status == STATUS[:completed]
+    raise TaskStatusError, 'Task status is already completed.' if status == STATUS[:completed]
 
     end_at = Time.zone.now if end_at.nil?
     latest_time_unit = task_time_units.last
