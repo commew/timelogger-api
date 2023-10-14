@@ -55,8 +55,7 @@ class Task < ApplicationRecord
   end
 
   def make_recording(start_at = nil)
-    current_status = status
-    raise "Task status is #{current_status}, could not make status recording." unless current_status == STATUS[:pending]
+    raise TaskStatusError, "Task status is #{status}, could not make status recording." if status != STATUS[:pending]
 
     start_at = Time.zone.now if start_at.nil?
     transaction do

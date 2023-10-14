@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   resources :tasks, only: [:create] do
     member do
       patch 'stop'
+      patch 'start'
       patch 'complete'
     end
      collection do
