@@ -42,7 +42,7 @@ class Task < ApplicationRecord
 
   def duration
     task_time_units.sum do |unit|
-      unit.end_at.nil? ? 0 : unit.end_at - unit.start_at
+      (unit.end_at || Time.zone.now) - unit.start_at
     end.truncate
   end
 
