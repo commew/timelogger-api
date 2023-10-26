@@ -5,8 +5,25 @@ class Task < ApplicationRecord
     completed: :completed
   }.freeze
 
+  TASK_CATEGORY_ACCOUNT_ERROR_MESSAGE =
+    'task_category に関連している account と、task を作成しようとした account が一致しません。'.freeze
+
   belongs_to :task_category
   has_many :task_time_units, dependent: :destroy
+
+  attr_accessor :account_start_by
+
+  validates :task_time_units, presence: true
+  validate :verify_account, on: :create
+
+  def verify_account
+    # task_categoryがない場合はそちらでエラーが出るので、こちらでは無視してOK.
+    return unless task_category
+
+    return if task_category.task_group.account_id == @account_start_by&.id
+
+    errors.add(:task_category, TASK_CATEGORY_ACCOUNT_ERROR_MESSAGE)
+  end
 
   def status
     return STATUS[:completed] if completed
@@ -62,8 +79,9 @@ class Task < ApplicationRecord
   end
 
   class << self
-    def start_recording(task_category, start_at)
+    def start_recording(task_category, start_at, account)
       new.tap do |task|
+        task.account_start_by = account
         task.task_category = task_category
         task.task_time_units << TaskTimeUnit.new(start_at:)
         task.save

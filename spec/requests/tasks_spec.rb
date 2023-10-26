@@ -2,17 +2,117 @@ require 'rails_helper'
 
 # 仮りで全てのエンドポイントを定義し、正常に応答することだけ確認
 RSpec.describe 'Tasks' do
-  describe 'POST /tasks', skip: '未実装' do
-    before do
-      post '/tasks'
+  describe 'POST /tasks' do
+    let(:task_category) { create(:task_category) }
+
+    let(:account) { create(:account, task_groups: [task_category.task_group]) }
+
+    context 'when task created' do
+      let(:now) { Time.zone.now }
+
+      before do
+        params = {
+          taskGroupId: task_category.task_group.id,
+          taskCategoryId: task_category.id,
+          status: Task::STATUS[:recording]
+        }
+
+        travel_to now
+
+        post '/tasks', params:, headers: headers(account)
+      end
+
+      it 'returns http created' do
+        expect(response).to have_http_status(201)
+      end
+
+      it 'returns task id' do
+        expect(JSON.parse(response.body)['id']).not_to be_nil
+      end
+
+      it 'returns recording as status' do
+        expect(JSON.parse(response.body)['status']).to eq Task::STATUS[:recording].to_s
+      end
+
+      it 'returns current time as startAt' do
+        expect(JSON.parse(response.body)['startAt']).to eq now.rfc3339
+      end
+
+      it 'returns nil as endAt' do
+        expect(JSON.parse(response.body)['endAt']).to eq '0000-00-00T00:00:00Z'
+      end
+
+      it 'returns 0 as duration' do
+        expect(JSON.parse(response.body)['duration']).to be 0
+      end
+
+      it 'returns task group id' do
+        expect(JSON.parse(response.body)['taskGroupId']).to be task_category.task_group.id
+      end
+
+      it 'returns task category id' do
+        expect(JSON.parse(response.body)['taskCategoryId']).to be task_category.id
+      end
     end
 
-    it 'returns 200 as dummy.' do
-      expect(response).to have_http_status(200)
+    context "when use another user's taskCategoryId" do
+      let(:another_users_task_category) { create(:task_category) }
+
+      let(:another_user_account) { create(:account, task_groups: [another_users_task_category.task_group]) }
+
+      before do
+        params = {
+          taskGroupId: another_user_account.task_groups.first.id,
+          taskCategoryId: another_users_task_category.id,
+          status: Task::STATUS[:recording]
+        }
+
+        post '/tasks', params:, headers: headers(account)
+      end
+
+      it 'returns http bad request' do
+        expect(response).to have_http_status(422)
+      end
+
+      it 'returns appropriate title' do
+        expect(JSON.parse(response.body)['title']).to eq 'Unprocessable Entity.'
+      end
+
+      it 'returns appropriate type' do
+        expect(JSON.parse(response.body)['type']).to eq 'UNPROCESSABLE_ENTITY'
+      end
+
+      it 'returns appropriate error name' do
+        expect(JSON.parse(response.body)['invalidParams'].first['name']).to eq 'task_category'
+      end
+
+      it 'returns appropriate error reason' do
+        expect(JSON.parse(response.body)['invalidParams'].first['reason'])
+          .to eq Task::TASK_CATEGORY_ACCOUNT_ERROR_MESSAGE
+      end
     end
 
-    it 'returns empty json' do
-      expect(response.body).to eq('{}')
+    context 'when taskCategoryId is empty' do
+      before do
+        params = {
+          taskGroupId: account.task_groups.first.id,
+          status: Task::STATUS[:recording]
+        }
+
+        post '/tasks', params:, headers: headers(account)
+      end
+
+      it 'returns http bad request' do
+        expect(response).to have_http_status(422)
+      end
+
+      it 'returns appropriate error name' do
+        expect(JSON.parse(response.body)['invalidParams'].first['name']).to eq 'task_category'
+      end
+
+      it 'returns appropriate error reason' do
+        expect(JSON.parse(response.body)['invalidParams'].first['reason']).to eq 'must exist'
+      end
     end
   end
 
@@ -46,6 +146,10 @@ RSpec.describe 'Tasks' do
 
   describe 'GET /tasks/recording' do
     let(:account) { create(:account) }
+
+    before do
+      get '/tasks/recording', headers: headers(account)
+    end
 
     context 'when recording tasks not exists' do
       before do
@@ -204,6 +308,10 @@ RSpec.describe 'Tasks' do
 
   describe 'GET /tasks/pending' do
     let(:account) { create(:account) }
+
+    before do
+      get '/tasks/pending', headers: headers(account)
+    end
 
     context 'when pending tasks not exists' do
       before do

@@ -1,6 +1,13 @@
 class TasksController < ApplicationController
+  # XXX taskGroupId, statusは不要なのでまったく見ていない
   def create
-    render json: {}, status: :ok
+    task_category = TaskCategory.find_by(id: task_params['taskCategoryId'])
+
+    if (task = Task.start_recording(task_category, Time.zone.now, @account)).invalid?
+      return render_validation_errored task.errors
+    end
+
+    render json: build_task_json(task), status: :created
   end
 
   def recording
@@ -37,6 +44,10 @@ class TasksController < ApplicationController
 
   private
 
+  def task_params
+    params.permit(:taskGroupId, :taskCategoryId, :status)
+  end
+
   def render_tasks(tasks)
     render json: {
       tasks: tasks.map { |task| build_task_json task }
@@ -53,5 +64,18 @@ class TasksController < ApplicationController
       taskGroupId: task.task_category.task_group.id,
       taskCategoryId: task.task_category.id
     }
+  end
+
+  def render_validation_errored(errors)
+    render json: {
+      type: 'UNPROCESSABLE_ENTITY',
+      title: 'Unprocessable Entity.',
+      invalidParams: errors.map do |error|
+        {
+          name: error.attribute,
+          reason: error.message
+        }
+      end
+    }, status: :unprocessable_entity
   end
 end
