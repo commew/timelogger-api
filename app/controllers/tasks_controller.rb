@@ -53,25 +53,13 @@ class TasksController < ApplicationController
   end
 
   def recording
-    task_ids = Task
-               .joins(:task_time_units)
-               .joins(task_category: :task_group)
-               .merge(TaskTimeUnit.where(end_at: nil))
-               .merge(TaskGroup.where(account_id: @account))
-               .pluck(:id)
+    task_ids = Task.recording_tasks_for(@account).pluck(:id)
 
     render_tasks Task.preload(:task_time_units).where(id: task_ids)
   end
 
   def pending
-    task_ids = Task
-               .joins(:task_time_units)
-               .joins(task_category: :task_group)
-               .where(completed: false)
-               .merge(TaskGroup.where(account_id: @account))
-               .group('tasks.id')
-               .having('COUNT(*) = SUM(IF(task_time_units.end_at IS NOT NULL, 1, 0))')
-               .pluck(:id)
+    task_ids = Task.pending_tasks_for(@account).pluck(:id)
 
     render_tasks Task.preload(:task_time_units).where(id: task_ids)
   end
