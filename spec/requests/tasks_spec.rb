@@ -116,8 +116,6 @@ RSpec.describe 'Tasks' do
     end
   end
 
-  # rubocop:disable RSpec/MultipleMemoizedHelpers
-  # letが多いが、いずれも必要なため
   describe 'PATCH /tasks/:id/stop' do
     let(:task_category) { create(:task_category) }
 
@@ -231,9 +229,7 @@ RSpec.describe 'Tasks' do
       end
     end
   end
-  # rubocop:enable RSpec/MultipleMemoizedHelpers
 
-  # rubocop:disable RSpec/MultipleMemoizedHelpers
   describe 'PATCH /tasks/:id/start' do
     let(:task_category) { create(:task_category) }
 
@@ -339,7 +335,6 @@ RSpec.describe 'Tasks' do
       end
     end
   end
-  # rubocop:enable RSpec/MultipleMemoizedHelpers
 
   describe 'PATCH /tasks/:id/complete' do
     let(:task_group) { create(:task_group) }

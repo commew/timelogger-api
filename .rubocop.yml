@@ -14,6 +14,9 @@ AllCops:
 RSpec/ExampleLength:
   Max: 15
 
+RSpec/MultipleMemoizedHelpers:
+  Max: 6
+
 # シンボル(＝ステータスメッセージ)はここで自動生成されていて、変更されうるので数
 # 値(＝ステータスコード)を直に使う。
 # https://github.com/rack/rack/blob/main/lib/rack/utils.rb#L481-L484
