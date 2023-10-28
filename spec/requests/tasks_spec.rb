@@ -222,8 +222,7 @@ RSpec.describe 'Tasks' do
                 start_at: '2023-09-09T00:00:00Z',
                 end_at: '2023-09-09T01:00:00Z'),
           build(:task_time_unit,
-                start_at: '2023-09-09T02:00:00Z',
-                end_at: '2023-09-09T03:00:00Z')
+                start_at: '2023-09-09T02:00:00Z')
         ]
       end
       let(:task) { create(:task, task_category:, task_time_units:) }
@@ -254,7 +253,8 @@ RSpec.describe 'Tasks' do
 
       it 'returns "endAt" param, set value from last task_time_unit.' do
         result = JSON.parse(response.body)['endAt']
-        expected = task_time_units.last.end_at.rfc3339
+        task.reload
+        expected = task.task_time_units.last.end_at.rfc3339
         expect(result).to eq(expected)
       end
     end
