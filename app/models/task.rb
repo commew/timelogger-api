@@ -46,13 +46,11 @@ class Task < ApplicationRecord
     end.truncate
   end
 
-  def make_pending(end_at = nil)
-    current_status = status
-    raise "Task status is #{current_status}, could not make status pending." unless current_status == STATUS[:recording]
+  def make_pending
+    raise TaskStatusError, "Task status is #{status}, could not make status pending." if status != STATUS[:recording]
 
-    end_at = Time.zone.now if end_at.nil?
     transaction do
-      task_time_units.last.update end_at:
+      task_time_units.last.update end_at: Time.zone.now
     end
   end
 

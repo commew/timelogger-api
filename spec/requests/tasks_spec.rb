@@ -116,19 +116,96 @@ RSpec.describe 'Tasks' do
     end
   end
 
-  describe 'PATCH /tasks/:id/stop', skip: '未実装' do
-    before do
-      patch '/tasks/1/stop'
+  # rubocop:disable RSpec/MultipleMemoizedHelpers
+  # letが多いが、いずれも必要なため
+  describe 'PATCH /tasks/:id/stop' do
+    let(:task_category) { create(:task_category) }
+
+    let(:account) { create(:account, task_groups: [task_category.task_group]) }
+
+    let(:now) { Time.zone.now.change(usec: 0) }
+
+    let(:before_30_minutes) { now - 30.minutes }
+
+    let(:task) { Task.start_recording(task_category, before_30_minutes, account) }
+
+    context 'when task exists' do
+      before do
+        travel_to now
+
+        patch "/tasks/#{task.id}/stop", headers: headers(account)
+      end
+
+      it 'returns http ok' do
+        expect(response).to have_http_status 200
+      end
+
+      it 'returns task id' do
+        expect(JSON.parse(response.body)['id']).to eq task.id
+      end
+
+      it 'returns pending as status' do
+        expect(JSON.parse(response.body)['status']).to eq Task::STATUS[:pending].to_s
+      end
+
+      it 'returns current time as startAt' do
+        expect(JSON.parse(response.body)['startAt']).to eq before_30_minutes.rfc3339
+      end
+
+      it 'returns nil as endAt' do
+        expect(JSON.parse(response.body)['endAt']).to eq now.rfc3339
+      end
+
+      it 'returns 30 minutes as duration' do
+        expect(JSON.parse(response.body)['duration']).to be 30 * 60
+      end
+
+      it 'returns task group id' do
+        expect(JSON.parse(response.body)['taskGroupId']).to be task.task_category.task_group.id
+      end
+
+      it 'returns task category id' do
+        expect(JSON.parse(response.body)['taskCategoryId']).to be task.task_category.id
+      end
     end
 
-    it 'returns 200 as dummy.' do
-      expect(response).to have_http_status(200)
+    context 'when task not exists' do
+      before do
+        patch '/tasks/0/stop', headers: headers(account)
+      end
+
+      it 'returns http not found' do
+        expect(response).to have_http_status 404
+      end
     end
 
-    it 'returns empty json' do
-      expect(response.body).to eq('{}')
+    context 'when task already stopped' do
+      let(:task_already_stopped) do
+        Task.start_recording(task_category, before_30_minutes, account).tap(&:make_pending)
+      end
+
+      before do
+        patch "/tasks/#{task_already_stopped.id}/stop", headers: headers(account)
+      end
+
+      it 'returns http bad request' do
+        expect(response).to have_http_status 400
+      end
+
+      it 'returns appropriate type' do
+        expect(JSON.parse(response.body)['type']).to eq 'INVALID_STATUS_TRANSITION'
+      end
+
+      it 'returns appropriate title' do
+        expect(JSON.parse(response.body)['title']).to eq 'Invalid status transition.'
+      end
+
+      it 'returns appropriate detail' do
+        expect(JSON.parse(response.body)['detail']).to eq 'Task status is pending, could not make status pending.'
+      end
     end
   end
+  # rubocop:enable RSpec/MultipleMemoizedHelpers
 
   describe 'PATCH /tasks/:id/complete', skip: '未実装' do
     before do

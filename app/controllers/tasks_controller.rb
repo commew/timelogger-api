@@ -10,6 +10,22 @@ class TasksController < ApplicationController
     render json: build_task_json(task), status: :created
   end
 
+  def stop
+    task = Task.find(params[:id])
+
+    begin
+      task.make_pending
+    rescue TaskStatusError => e
+      return render_status_error e
+    end
+
+    render json: build_task_json(task), status: :ok
+  end
+
+  def complete
+    render json: {}, status: :ok
+  end
+
   def recording
     task_ids = Task
                .joins(:task_time_units)
@@ -32,14 +48,6 @@ class TasksController < ApplicationController
                .pluck(:id)
 
     render_tasks Task.preload(:task_time_units).where(id: task_ids)
-  end
-
-  def stop
-    render json: {}, status: :ok
-  end
-
-  def complete
-    render json: {}, status: :ok
   end
 
   private
@@ -77,5 +85,13 @@ class TasksController < ApplicationController
         }
       end
     }, status: :unprocessable_entity
+  end
+
+  def render_status_error(error)
+    render json: {
+      type: 'INVALID_STATUS_TRANSITION',
+      title: 'Invalid status transition.',
+      detail: error.message
+    }, status: :bad_request
   end
 end
