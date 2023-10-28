@@ -13,6 +13,8 @@ class TasksController < ApplicationController
   def stop
     task = Task.find(params[:id])
 
+    return render_forbidden 'タスクを停止する権限がありません' if task.account.id != @account.id
+
     begin
       task.make_pending
     rescue TaskStatusError => e
@@ -25,6 +27,8 @@ class TasksController < ApplicationController
   def start
     task = Task.find(params[:id])
 
+    return render_forbidden 'タスクを再開する権限がありません' if task.account.id != @account.id
+
     begin
       task.make_recording
     rescue TaskStatusError => e
@@ -36,6 +40,8 @@ class TasksController < ApplicationController
 
   def complete
     task = Task.find(params[:id])
+
+    return render_forbidden 'タスクを終了する権限がありません' if task.account.id != @account.id
 
     begin
       task.make_completed
@@ -113,5 +119,13 @@ class TasksController < ApplicationController
       title: 'Invalid status transition.',
       detail: error.message
     }, status: :bad_request
+  end
+
+  def render_forbidden(error_message)
+    render json: {
+      type: 'UNAUTHORIZED',
+      title: 'Account is not authorized.',
+      detail: error_message
+    }, status: :forbidden
   end
 end

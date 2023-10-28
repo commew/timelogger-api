@@ -204,6 +204,32 @@ RSpec.describe 'Tasks' do
         expect(JSON.parse(response.body)['detail']).to eq 'Task status is pending, could not make status pending.'
       end
     end
+
+    context 'when tried by another account' do
+      let(:another_account) { create(:account) }
+
+      before do
+        travel_to now
+
+        patch "/tasks/#{task.id}/stop", headers: headers(another_account)
+      end
+
+      it 'returns http forbidden' do
+        expect(response).to have_http_status 403
+      end
+
+      it 'returns appropriate type' do
+        expect(JSON.parse(response.body)['type']).to eq 'UNAUTHORIZED'
+      end
+
+      it 'returns appropriate title' do
+        expect(JSON.parse(response.body)['title']).to eq 'Account is not authorized.'
+      end
+
+      it 'returns appropriate detail' do
+        expect(JSON.parse(response.body)['detail']).to eq 'タスクを停止する権限がありません'
+      end
+    end
   end
   # rubocop:enable RSpec/MultipleMemoizedHelpers
 
@@ -294,15 +320,34 @@ RSpec.describe 'Tasks' do
         expect(JSON.parse(response.body)['detail']).to eq 'Task status is recording, could not make status recording.'
       end
     end
+
+    context 'when tried by another account' do
+      let(:another_account) { create(:account) }
+
+      before do
+        travel_to now
+
+        patch "/tasks/#{task.id}/start", headers: headers(another_account)
+      end
+
+      it 'returns http forbidden' do
+        expect(response).to have_http_status 403
+      end
+
+      it 'returns appropriate detail' do
+        expect(JSON.parse(response.body)['detail']).to eq 'タスクを再開する権限がありません'
+      end
+    end
   end
   # rubocop:enable RSpec/MultipleMemoizedHelpers
 
   describe 'PATCH /tasks/:id/complete' do
     let(:task_group) { create(:task_group) }
     let(:task_category) { create(:task_category, task_group:, name: 'その他') }
+    let(:account) { create(:account, task_groups: [task_group]) }
 
     before do
-      patch "/tasks/#{task.id}/complete", headers:
+      patch "/tasks/#{task.id}/complete", headers: headers(account)
     end
 
     context 'when task is recording, and task has some task_time_units' do
@@ -372,6 +417,32 @@ RSpec.describe 'Tasks' do
 
       it 'returns 404.' do
         expect(response).to have_http_status(404)
+      end
+    end
+
+    context 'when tried by another account' do
+      let(:task_time_units) do
+        [
+          build(:task_time_unit,
+                start_at: '2023-09-09T00:00:00Z',
+                end_at: '2023-09-09T01:00:00Z'),
+          build(:task_time_unit,
+                start_at: '2023-09-09T02:00:00Z')
+        ]
+      end
+      let(:task) { create(:task, task_category:, task_time_units:) }
+      let(:another_account) { create(:account) }
+
+      before do
+        patch "/tasks/#{task.id}/complete", headers: headers(another_account)
+      end
+
+      it 'returns http forbidden' do
+        expect(response).to have_http_status 403
+      end
+
+      it 'returns appropriate detail' do
+        expect(JSON.parse(response.body)['detail']).to eq 'タスクを終了する権限がありません'
       end
     end
   end
