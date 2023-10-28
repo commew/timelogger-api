@@ -23,7 +23,15 @@ class TasksController < ApplicationController
   end
 
   def complete
-    render json: {}, status: :ok
+    task = Task.find(params[:id])
+
+    begin
+      task.make_completed
+    rescue TaskStatusError => e
+      return render_status_error e
+    end
+
+    render json: build_task_json(task), status: :ok
   end
 
   def recording
