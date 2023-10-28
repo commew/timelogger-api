@@ -469,6 +469,8 @@ RSpec.describe 'Tasks' do
           )
         )
 
+        travel_to '2023-01-01T10:22:33Z'
+
         get '/tasks/recording', headers: headers(account)
       end
 
@@ -497,7 +499,7 @@ RSpec.describe 'Tasks' do
       end
 
       it 'returns appropriate task duration' do
-        expect(JSON.parse(response.body)['tasks'][0]['duration']).to eq(0)
+        expect(JSON.parse(response.body)['tasks'][0]['duration']).to eq (22 * 60) + 33
       end
 
       it 'returns appropriate taskGroupId' do
@@ -525,7 +527,7 @@ RSpec.describe 'Tasks' do
       end
 
       it 'returns appropriate task duration for second task' do
-        expect(JSON.parse(response.body)['tasks'][1]['duration']).to eq(10 * 60)
+        expect(JSON.parse(response.body)['tasks'][1]['duration']).to eq((10 * 60) + (2 * 60) + 33)
       end
 
       it 'returns appropriate taskGroupId for second task' do

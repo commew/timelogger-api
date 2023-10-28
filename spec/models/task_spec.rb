@@ -76,7 +76,9 @@ RSpec.describe Task do
       let(:task) { create(:task, task_time_units:) }
 
       it 'returns expected seconds.' do
-        expected = (40 * 60) + (3 * 60) + 21
+        travel_to '2023-09-11 00:00:15'
+
+        expected = (40 * 60) + (3 * 60) + 21 + 15
         expect(task.duration).to eq(expected)
       end
     end
