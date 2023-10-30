@@ -16,6 +16,10 @@ class Task < ApplicationRecord
   validates :task_time_units, presence: true
   validate :verify_account, on: :create
 
+  def account
+    task_category.task_group.account
+  end
+
   def verify_account
     # task_categoryがない場合はそちらでエラーが出るので、こちらでは無視してOK.
     return unless task_category
@@ -83,6 +87,24 @@ class Task < ApplicationRecord
         task.task_time_units << TaskTimeUnit.new(start_at:)
         task.save
       end
+    end
+
+    def recording_tasks_for(account)
+      Task
+        .joins(:task_time_units)
+        .joins(task_category: :task_group)
+        .merge(TaskTimeUnit.where(end_at: nil))
+        .merge(TaskGroup.where(account_id: account))
+    end
+
+    def pending_tasks_for(account)
+      Task
+        .joins(:task_time_units)
+        .joins(task_category: :task_group)
+        .where(completed: false)
+        .merge(TaskGroup.where(account_id: account))
+        .group('tasks.id')
+        .having('COUNT(*) = SUM(IF(task_time_units.end_at IS NOT NULL, 1, 0))')
     end
   end
 end

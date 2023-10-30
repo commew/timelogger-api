@@ -13,6 +13,8 @@ class TasksController < ApplicationController
   def stop
     task = Task.find(params[:id])
 
+    return render_forbidden 'タスクを停止する権限がありません' if task.account.id != @account.id
+
     begin
       task.make_pending
     rescue TaskStatusError => e
@@ -24,6 +26,8 @@ class TasksController < ApplicationController
 
   def start
     task = Task.find(params[:id])
+
+    return render_forbidden 'タスクを再開する権限がありません' if task.account.id != @account.id
 
     begin
       task.make_recording
@@ -37,6 +41,8 @@ class TasksController < ApplicationController
   def complete
     task = Task.find(params[:id])
 
+    return render_forbidden 'タスクを終了する権限がありません' if task.account.id != @account.id
+
     begin
       task.make_completed
     rescue TaskStatusError => e
@@ -47,25 +53,13 @@ class TasksController < ApplicationController
   end
 
   def recording
-    task_ids = Task
-               .joins(:task_time_units)
-               .joins(task_category: :task_group)
-               .merge(TaskTimeUnit.where(end_at: nil))
-               .merge(TaskGroup.where(account_id: @account))
-               .pluck(:id)
+    task_ids = Task.recording_tasks_for(@account).pluck(:id)
 
     render_tasks Task.preload(:task_time_units).where(id: task_ids)
   end
 
   def pending
-    task_ids = Task
-               .joins(:task_time_units)
-               .joins(task_category: :task_group)
-               .where(completed: false)
-               .merge(TaskGroup.where(account_id: @account))
-               .group('tasks.id')
-               .having('COUNT(*) = SUM(IF(task_time_units.end_at IS NOT NULL, 1, 0))')
-               .pluck(:id)
+    task_ids = Task.pending_tasks_for(@account).pluck(:id)
 
     render_tasks Task.preload(:task_time_units).where(id: task_ids)
   end
@@ -113,5 +107,13 @@ class TasksController < ApplicationController
       title: 'Invalid status transition.',
       detail: error.message
     }, status: :bad_request
+  end
+
+  def render_forbidden(error_message)
+    render json: {
+      type: 'UNAUTHORIZED',
+      title: 'Account is not authorized.',
+      detail: error_message
+    }, status: :forbidden
   end
 end
