@@ -45,7 +45,7 @@ jobs:
 
       - name: 'Build Docker Image'
         run: |-
-          docker build -t local/image --build-arg ENV="production" ./
+          docker build -t local/image --build-arg ENV="staging" ./
           docker tag local/image ${{ env.IMAGE_URL }}
 
       - name: 'Push Docker Image'
