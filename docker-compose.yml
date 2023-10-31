@@ -1,0 +1,29 @@
+version: "3"
+services:
+  api:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile.dev.api
+    container_name: api-timelogger
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+    working_dir: /app
+    user: 1000:1000
+    ports:
+      - 3000:3000
+    command: bash ./start_dev_server.sh
+  db:
+    image: mysql:8.0.32
+    container_name: db-timelogger
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      TZ: 'Asia/Tokyo'
+    volumes:
+      - './docker/data:/var/lib/mysql'
+    ports:
+      - 3306:3306
+    # gem mysql2 を使用しての接続にて以下のエラーが出たため、その対応として mysql 起動オプションを指定
+    # エラー： RSA Encryption not supported - caching_sha2_password plugin was built with GnuTLS support
+    command: --default-authentication-plugin=mysql_native_password
